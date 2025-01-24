@@ -1,0 +1,23 @@
+{
+  "name": "wasmoon-teal-game-template",
+  "main": "src/index.js",
+  "devDependencies": {
+    "esbuild": "0.24.0",
+    "wasmoon": "1.15.0"
+  },
+  "scripts": {
+    "copy": "if [ ! -d dist/assets ]; then mkdir dist/assets; fi; if [ ! -d dist/assets/game ]; then mkdir dist/assets/game; fi; if [ ! -d dist/assets/shared ]; then mkdir dist/assets/shared; fi; tl run teal/build/copy.tl",
+    "build": "cyan build && esbuild src/index.js --bundle --platform=node --loader:.wasm=file --outfile=dist/index.js && npm run copy",
+    "run": "tl run teal/server/main.tl",
+    "start": "npm run build && npm run run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JR-Mitchell/wasmoon-teal-game-template.git"
+  },
+  "license": "GPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/JR-Mitchell/wasmoon-teal-game-template/issues"
+  },
+  "homepage": "https://github.com/JR-Mitchell/wasmoon-teal-game-template#readme"
+}
