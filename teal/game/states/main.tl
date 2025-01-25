@@ -20,18 +20,34 @@ function Main.new() : Main
 end
 
 function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState))
-    for _, bubble in ipairs(self.player.bubbles) do
+    local to_pop = {}
+    for i, bubble in ipairs(self.player.bubbles) do
         local radius = bubble:radius()
         local squared_radius = radius * radius
         bubble.collision_vector = nil
         for _, bg_slice in ipairs(self.background.slices) do
             local v = bg_slice.collision_slice:collide(bg_slice.screenY, bubble.draw_x + radius, bubble.draw_y + radius, squared_radius)
             if v then
-                bubble.collision_vector = v
+                bubble.collision_vector = v[1]
+                if v[2] then
+                    table.insert(to_pop, i)
+                end
                 break
             end
         end
+    end
 
+    for _, i in ipairs(to_pop) do
+        self.player:pop(i)
+    end
+
+    local i = 1
+    while (i <= #self.player.bubbles) do
+        if self.player.bubbles[i].bubbleIndex >= 0 then
+            i = i + 1
+        else
+            table.remove(self.player.bubbles, i)
+        end
     end
 
     self.player:step(dt, keyStates, socketSend)
