@@ -20,7 +20,16 @@ function StartScreen.new() : StartScreen
 end
 
 function StartScreen:step(dt: number, keyStates: {string:boolean}, socketSend: function(string))
-    self.player:step(dt, keyStates, socketSend)
+    local newKeystates = {}
+    setmetatable(newKeystates, {__index = keyStates})
+    -- hacky: make it move up if any keys pressed
+    for _,v in pairs(keyStates) do
+        if (v) then
+            newKeystates["w"] = true
+            break
+        end
+    end
+    self.player:step(dt, newKeystates, socketSend)
 end
 
 function StartScreen:draw()
