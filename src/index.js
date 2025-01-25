@@ -113,11 +113,31 @@ function registerWebsocketCallbacks(triggerOpen) {
 
 // Interface enabling Lua to draw to canvas
 const CanvasCalls = {
-    newCanvas: function(transparent, height) {
+    newCanvas: function(transparent, height, tint) {
         const newCanvasElement = document.createElement("canvas");
         newCanvasElement.width = canvasElement.width;
         newCanvasElement.height = height ?? canvasElement.height;
         const newCanvas = newCanvasElement.getContext("2d");
+
+	let parentCanvas = canvas;
+	let drawCanvas = newCanvas;
+	let overlayCanvas = null;
+	let drawCanvasElement = null;
+	let overlayCanvasElement = null;
+
+        if (tint != undefined) {
+	    parentCanvas = newCanvas
+	    drawCanvasElement = document.createElement("canvas");
+	    drawCanvasElement.width = newCanvasElement.width;
+	    drawCanvasElement.height = newCanvasElement.height;
+	    drawCanvas = drawCanvasElement.getContext("2d");
+	    overlayCanvasElement = document.createElement("canvas");
+	    overlayCanvasElement.width = newCanvasElement.width;
+	    overlayCanvasElement.height = newCanvasElement.height;
+	    overlayCanvas = overlayCanvasElement.getContext("2d");
+            overlayCanvas.fillStyle = tint;
+            overlayCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+	}
 
         const subCanvas = {
             // sx: sub-x -- selects location on sprite sheet
@@ -128,7 +148,7 @@ const CanvasCalls = {
             drawImage: function(path, sx, sy, sw, sh, dx, dy, dw, dh) {
                 if (imageMap.has(path)) {
                     const bmp = imageMap.get(path);
-                    newCanvas.drawImage(bmp, sx, sy, sw, sh, dx, dy, dw, dh);
+                    drawCanvas.drawImage(bmp, sx, sy, sw, sh, dx, dy, dw, dh);
                 }
             },
 
@@ -136,6 +156,21 @@ const CanvasCalls = {
                 canvas.drawImage(newCanvasElement, x, y)
             }
         }
+
+	if (tint != undefined) {
+	    subCanvas.draw = function(x, y) {
+                newCanvas.globalCompositeOperation = "source-over";
+		newCanvas.drawImage(drawCanvasElement, 0, 0)
+                newCanvas.globalCompositeOperation = "source-atop";
+		newCanvas.fillStyle = tint;
+		newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                canvas.drawImage(newCanvasElement, x, y)
+            }
+        } else {
+	    subCanvas.draw = function(x, y) {
+                canvas.drawImage(newCanvasElement, x, y)
+            }
+	}
 
         if (transparent) {
             subCanvas.clearCanvas = function() {
