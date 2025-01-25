@@ -11,7 +11,8 @@ global config: Config = {
         "sock.png",
         "apple.png",
         "items.png",
-        "arrow.png"
+        "arrow.png",
+        "controls.png"
     },
     luaFilenames = {
         "game/main.lua",

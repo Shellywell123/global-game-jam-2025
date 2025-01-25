@@ -28,6 +28,7 @@ function StartBackground.new(): StartBackground
         end
     end
     instance.canvas.drawImage("arrow.png", 0, 0, 64, 64, ((config.displayWidth // 2) - 32), 16, 64, 64)
+    instance.canvas.drawImage("controls.png", 0, 0, 64, 64, config.displayWidth - 80, config.displayHeight - 80, 64, 64)
     return instance
 end
 
