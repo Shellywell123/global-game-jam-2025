@@ -16,15 +16,13 @@ local record Collideable
 end
 
 local function rectangular_geometry(self: Collideable, x: number, y: number) : {number}
-    if (x >= self.x and x <= self.x + self.size_x) then
-        if x > self.x + self.size_x / 2 then
-            return {[0] = 1, [1] = 0}
-        else
-            return {[0] = -1, [1] = 0}
-        end
-    end
-    if (y >= self.y and y <= self.y + self.size_y) then
-        return {[0] = 0, [1] = 1}
+    local within_x = ((x >= self.x) and (x <= (self.x + self.size_x)))
+    local within_y = ((y >= self.y) and (y <= (self.y + self.size_y)))
+    if within_x and within_y then
+        return {
+            [0] = x - self.x + self.size_x / 2,
+            [1] = y - self.y + self.size_y / 2,
+        }
     end
     return nil
 end
@@ -36,8 +34,8 @@ local CollideableMetatable: metatable<Collideable> = {
 function Collideable.new(): Collideable
     local instance: Collideable = {}
     setmetatable(instance, CollideableMetatable)
-    instance.x = 0
-    instance.y = 0
+    instance.x = 50
+    instance.y = 200
 
     instance.size_x = 32
     instance.size_y = 16

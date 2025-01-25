@@ -30,6 +30,16 @@ function Game.socketSend(message: string)
 end
 
 function Game.step(dt: number)
+    for _, bubble in ipairs(Game.player.bubbles) do
+        bubble.collision_vector = nil
+        for _, bg_slice in ipairs(Game.background.slices) do
+            local v = bg_slice.collision_slice:collide(bubble.x, bubble.y)
+            if v then
+                print("Collision!", bubble.x, bubble.y)
+            end
+        end
+    end
+
     Game.player:step(dt, Game.keyStates, Game.socketSend)
     Game.background:step(dt)
 end

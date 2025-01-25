@@ -26,6 +26,7 @@ local record Bubble
     -- must be integral: the pixels into which to draw the bubble
     draw_x: integer
     draw_y: integer
+    collision_vector: {number}
 end
 
 local BubbleMetatable: metatable<Bubble> = {
@@ -46,6 +47,7 @@ function Bubble.new(): Bubble
     instance.ticker = 0
     instance.draw_x = 0
     instance.draw_y = 0
+    instance.collision_vector = nil
     return instance
 
 end
@@ -70,13 +72,13 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     end
     -- increment the internal ticker for animations
     self.ticker = math.fmod(self.ticker + (dt * self.ticker_speed), 360)
-
-    -- have to keep these seperate to avoid rounding errors
-    self.draw_x = math.floor(self.x + math.sin(self.ticker * DEGREES_TO_RADIANS) * OSCILLATE_AMPLITUDE)
-    self.draw_y = math.floor(self.y)
 end
 
 function Bubble:draw()
+    -- have to keep these seperate to avoid rounding errors
+    self.draw_x = math.floor(self.x + math.sin(self.ticker * DEGREES_TO_RADIANS) * OSCILLATE_AMPLITUDE)
+    self.draw_y = math.floor(self.y)
+
     if (self.bubbleIndex ~= self.previousBubbleIndex) then
         local size = BUBBLE_DIAMETER[self.bubbleIndex]
         self.canvas.clearCanvas()
