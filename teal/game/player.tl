@@ -4,7 +4,6 @@ local type Vector2D = require("game.vector2d")
 
 local DEGREES_TO_RADIANS <const> = 3.1415 / 180
 local OSCILLATE_AMPLITUDE <const> = 2
-local SPRITE_STRIDE <const> = 32
 local BUBBLE_DIAMETER <const> = {
     -- maps from bubble "level" to the diameter in pixels
     [0] = 8,
@@ -34,7 +33,7 @@ end
 
 local BubbleMetatable: metatable<Bubble> = {
     __index = Bubble,
- }
+}
 
 function Bubble:radius(): number
     return BUBBLE_DIAMETER[self.bubbleIndex] / 2
@@ -191,12 +190,12 @@ function Player.newTest(): Player
     return instance
 end
 
-function Player:pop(i: integer)
-    -- are we invulnerable still?
-    if self.bubbles[i].invulnerableTime > 0 then
-        return
-    end
+function Player:wouldPop(i: integer) : boolean
+    -- are we invulnerable still? return true if we would pop
+    return self.bubbles[i].invulnerableTime <= 0
+end
 
+function Player:pop(i: integer)
     self.bubbles[i].bubbleIndex = self.bubbles[i].bubbleIndex - 1
 
     if self.bubbles[i].bubbleIndex < 0 then
