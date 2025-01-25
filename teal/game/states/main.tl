@@ -19,7 +19,7 @@ function Main.new() : Main
     return instance
 end
 
-function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function(string))
+function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState))
     for _, bubble in ipairs(self.player.bubbles) do
         local radius = bubble:radius()
         local squared_radius = radius * radius

@@ -1,7 +1,6 @@
 local subprotocol = require("shared.subprotocol")
 local Buttons = require("game.buttons")
 local type GameState = require("game.gamestate")
-local MainState = require("game.states.main")
 local StartState = require("game.states.start")
 
 global record Game
@@ -33,8 +32,12 @@ function Game.socketSend(message: string)
     end
 end
 
+function Game.changeState(newState: GameState)
+    Game.currentState = newState
+end
+
 function Game.step(dt: number)
-    Game.currentState:step(dt, Game.keyStates, Game.socketSend)
+    Game.currentState:step(dt, Game.keyStates, Game.socketSend, Game.changeState)
 end
 
 function Game.draw()
