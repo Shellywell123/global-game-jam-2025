@@ -24,22 +24,22 @@ function Buttons.new(): Buttons
 end
 
 
--- function Buttons:onClicked(x: number, y: number): number
+function Buttons:onClicked(x: number, y: number): number
 
---     if (y > config.displayHeight - size) then
+    if (y > config.displayHeight - size) then
         
---         if (x < size ) then -- left button pressed
---             print("Left button clicked")
---             -- character.spriteIndex = 0
---             return -1
+        if (x < size ) then -- left button pressed
+            print("Left button clicked")
+            -- character.spriteIndex = 0
+            return -1
         
---         elseif (x > config.displayWidth - size ) then -- right button pressed
---             print("Right button clicked")
---             return 1
---         end
---     end
---     return 0
--- end
+        elseif (x > config.displayWidth - size ) then -- right button pressed
+            print("Right button clicked")
+            return 1
+        end
+    end
+    return 0
+end
 
 
 return Buttons

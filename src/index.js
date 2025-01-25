@@ -250,17 +250,19 @@ async function execute() {
         // }
 
         if (game["touchStart"] != undefined) {
-            canvasElement.addEventListener('touchstart', (event) => {
+            document.addEventListener('touchstart', (event) => {
+                console.log("touchstart")
                 let x,y;
                 [x,y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
-                    game.ontouchStart(x, y);
+                    game.onTouchStart(x, y);
                 }
             });
         }
 
         if (game["touchEnd"] != undefined) {
-            canvasElement.addEventListener('touchend', (event) => {
+            document.addEventListener('touchend', (event) => {
+                console.log("touchend")
                 let x,y;
                 [x,y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {

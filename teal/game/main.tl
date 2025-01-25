@@ -76,30 +76,32 @@ function Game.websocketMessage(message: string)
     end
 end
 
--- function Game.onTouchStart(x: number, y: number)
---     local move = Game.buttons:onClicked(x, y)
---     if (move == 0) then
---         return
---     elseif (move == -1) then
---         Game.keyPress("a")
---     elseif (move == 1) then
---         Game.keyPress("d")
---     end
+function Game.onTouchStart(x: number, y: number)
+    print("onTouchStart: x="..x..", y="..y)
+    local move = Game.buttons:onClicked(x, y)
+    if (move == 0) then
+        return
+    elseif (move == -1) then
+        Game.keyPress("a")
+    elseif (move == 1) then
+        Game.keyPress("d")
+    end
 
---     Game.character:step(0, Game.keyStates, Game.socketSend)
---     Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
--- end
+    Game.character:step(0, Game.keyStates, Game.socketSend)
+    Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
+end
 
--- function Game.onTouchEnd(x: number, y: number)
---     local move = Game.buttons:onClicked(x, y)
---     if (move == 0) then
---         return
---     elseif (move == -1) then
---         Game.keyPress("")
---     elseif (move == 1) then
---         Game.keyPress("")
---     end
+function Game.onTouchEnd(x: number, y: number)
+    print("onTouchEnd: x="..x..", y="..y)
+    local move = Game.buttons:onClicked(x, y)
+    if (move == 0) then
+        return
+    elseif (move == -1) then
+        Game.keyPress("")
+    elseif (move == 1) then
+        Game.keyPress("")
+    end
 
---     Game.character:step(0, Game.keyStates, Game.socketSend)
---     Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
--- end
+    Game.character:step(0, Game.keyStates, Game.socketSend)
+    Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
+end
