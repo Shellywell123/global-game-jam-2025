@@ -1,6 +1,6 @@
 services:
-  bubble:
-    container_name: bubble
-    image: shellywell123/bubbles:latest
+  belch:
+    container_name: belch
+    image: shellywell123/belch:latest
     ports:
       - 8080:8080
