@@ -13,7 +13,7 @@ local CharacterMetatable: metatable<Character> = {
 
 function Character.new(): Character
     local instance: Character = {}
-    setmetatable(instance, CharacterMetatable)    
+    setmetatable(instance, CharacterMetatable)
     instance.speed = 0.5
     instance.spriteIndex = 0
     instance.x = 300
@@ -47,7 +47,7 @@ end
 function Character:draw()
     if (self.spriteIndex ~= self.prevSpriteIndex) then
         self.canvas.clearCanvas()
-        self.canvas.drawImage("guy.png", self.spriteIndex * 64, 0, 64, 64, 0, 0, 64, 64)
+        self.canvas.drawImage("bubble.png", self.spriteIndex * 64, 0, 64, 64, 0, 0, 64, 64)
         self.prevSpriteIndex = self.spriteIndex
     end
     self.canvas.draw(self.x, self.y)
