@@ -8,12 +8,13 @@ global config: Config = {
         "game/main.lua",
         "game/background.lua",
         "game/character.lua",
-        "shared/subprotocol.lua"
+        "shared/subprotocol.lua",
+        "shared/init.lua"
     },
     blankColour = "black",
     pageBackgroundColour = "powderblue",
-    displayWidth = 1080,
-    displayHeight = 1920,
+    displayWidth = 270,
+    displayHeight = 480,
     entryPoint = "game/main.lua"
 }
 print("Completed initialising...")
