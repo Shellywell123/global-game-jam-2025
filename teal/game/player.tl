@@ -92,7 +92,7 @@ end
 -- keyStates: input key pressed or not
 -- dt: miliseconds
 function Bubble:step(dt: number, keyStates: {string:boolean})
-    
+
     local cv: Vector2D = {x = 0, y = 0}
     if self.collision_vector then
         cv = self.collision_vector
@@ -135,6 +135,11 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
         if cv.y == 0 then
             self.y = self.y + self.y_vel * dt
         end
+    end
+
+    -- if we are not colliding, there is a small restoration speed that gets added
+    if (cv.y == 0) and self.y + self:radius() > BUBBLE_TARGET_Y then
+        self.y = self.y - BUBBLE_RESTORATION_SPEED * dt
     end
 
     -- increment the internal ticker for animations
