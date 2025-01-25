@@ -1,11 +1,13 @@
 local subprotocol = require("shared.subprotocol")
 local Background = require("game.background")
 local Character = require("game.character")
+local Buttons = require("game.buttons")
 
 global record Game
     keyStates: {string:boolean}
     background: Background
     character: Character
+    buttons: Buttons
     socketOpen: boolean
     step: function(dt: number)
     draw: function()
@@ -21,6 +23,7 @@ function Game.init()
     Socket.open(subprotocol)
     Game.background = Background.new()
     Game.character = Character.new()
+    Game.buttons = Buttons.new()
 end
 
 function Game.socketSend(message: string)
@@ -36,6 +39,7 @@ end
 function Game.draw()
     Game.background:draw()
     Game.character:draw()
+    Game.buttons:draw()
 end
 
 function Game.keyUp(key: string)
