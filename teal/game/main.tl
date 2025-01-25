@@ -40,7 +40,7 @@ function Game.step(dt: number)
         local squared_radius = radius * radius
         bubble.collision_vector = nil
         for _, bg_slice in ipairs(Game.background.slices) do
-            local v = bg_slice.collision_slice:collide(bubble.draw_x + radius, bubble.draw_y + radius, squared_radius)
+            local v = bg_slice.collision_slice:collide(bg_slice.screenY, bubble.draw_x + radius, bubble.draw_y + radius, squared_radius)
             if v then
                 bubble.collision_vector = v
                 break

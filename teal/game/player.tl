@@ -3,6 +3,8 @@ require("shared.init")
 local DEGREES_TO_RADIANS <const> = 3.1415 / 180
 local OSCILLATE_AMPLITUDE <const> = 2
 local SPRITE_STRIDE <const> = 32
+-- todo: constants
+local BACKGROUND_SPEED <const> = 0.03
 local BUBBLE_DIAMETER <const> = {
     -- maps from bubble "level" to the diameter in pixels
     [0] = 8,
@@ -64,7 +66,11 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     if self.collision_vector then
         cv = self.collision_vector
     end
-    
+
+    if cv[1] ~= 0 then
+        self.y = self.y + 2 * BACKGROUND_SPEED * dt
+    end
+
     local left = false
     local right = false
 
@@ -85,6 +91,7 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     if (right and not left) then
         self.x = self.x + self.x_vel * dt
     end
+
     if (keyStates["w"] and not keyStates["s"]) then
         if cv[1] == 0 then
             self.y = self.y - self.y_vel * dt
