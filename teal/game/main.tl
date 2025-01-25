@@ -46,8 +46,15 @@ function Game.keyUp(key: string)
     Game.keyStates[key] = false
 end
 
+function Game.keyDown(key: string)
+    Game.keyStates[key] = true
+    print("keyDown: "..key)
+end
+
 function Game.keyPress(key: string)
     Game.keyStates[key] = true
+    Socket.send("keyPress: "..key)
+    print("keyPress: "..key)
 end
 
 function Game.websocketOpened()
@@ -69,8 +76,30 @@ function Game.websocketMessage(message: string)
     end
 end
 
-function Game.onClick(x: number, y: number)
-    -- The -32 accounts for sprite width
-    Game.character:updatePosition(x - 32, y - 32)
-    Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
-end
+-- function Game.onTouchStart(x: number, y: number)
+--     local move = Game.buttons:onClicked(x, y)
+--     if (move == 0) then
+--         return
+--     elseif (move == -1) then
+--         Game.keyPress("a")
+--     elseif (move == 1) then
+--         Game.keyPress("d")
+--     end
+
+--     Game.character:step(0, Game.keyStates, Game.socketSend)
+--     Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
+-- end
+
+-- function Game.onTouchEnd(x: number, y: number)
+--     local move = Game.buttons:onClicked(x, y)
+--     if (move == 0) then
+--         return
+--     elseif (move == -1) then
+--         Game.keyPress("")
+--     elseif (move == 1) then
+--         Game.keyPress("")
+--     end
+
+--     Game.character:step(0, Game.keyStates, Game.socketSend)
+--     Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
+-- end

@@ -9,7 +9,7 @@ end
 
 local CharacterMetatable: metatable<Character> = {
     __index = Character,
- }
+}
 
 function Character.new(): Character
     local instance: Character = {}
@@ -25,17 +25,22 @@ end
 function Character:step(dt: number, keyStates: {string:boolean}, socketSend: function(string))
     local prevX = self.x
     local prevY = self.y
-    if (keyStates["w"] and not keyStates["s"]) then
-        self.y = self.y - self.speed * dt
+
+    local left = false
+    local right = false
+
+    if (keyStates["a"] or keyStates["ArrowLeft"]) then
+        left = true
     end
-    if (keyStates["a"] and not keyStates["d"]) then
+    if (keyStates["d"] or keyStates["ArrowRight"]) then
+        right = true
+    end
+
+    if (left and not right) then
         self.spriteIndex = 0
         self.x = self.x - self.speed * dt
     end
-    if (keyStates["s"] and not keyStates["w"]) then
-        self.y = self.y + self.speed * dt
-    end
-    if (keyStates["d"] and not keyStates["a"]) then
+    if (right and not left) then
         self.spriteIndex = 1
         self.x = self.x + self.speed * dt
     end
@@ -50,6 +55,10 @@ function Character:draw()
         self.prevSpriteIndex = self.spriteIndex
     end
     self.canvas.draw(self.x, self.y)
+end
+
+function Character:GetPosition(): number, number
+    return self.x, self.y
 end
 
 function Character:updatePosition(x: number, y: number)

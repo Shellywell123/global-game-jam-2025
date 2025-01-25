@@ -239,12 +239,32 @@ async function execute() {
             });
         }
 
-        if (game["onClick"] != undefined) {
-            canvasElement.addEventListener('click', (event) => {
+        // if (game["onClick"] != undefined) {
+        //     canvasElement.addEventListener('click', (event) => {
+        //         let x,y;
+        //         [x,y] = transformPointToCanvas(event.pageX, event.pageY);
+        //         if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
+        //             game.onClick(x, y);
+        //         }
+        //     });
+        // }
+
+        if (game["touchStart"] != undefined) {
+            canvasElement.addEventListener('touchstart', (event) => {
                 let x,y;
                 [x,y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
-                    game.onClick(x, y);
+                    game.ontouchStart(x, y);
+                }
+            });
+        }
+
+        if (game["touchEnd"] != undefined) {
+            canvasElement.addEventListener('touchend', (event) => {
+                let x,y;
+                [x,y] = transformPointToCanvas(event.pageX, event.pageY);
+                if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
+                    game.onTouchEnd(x, y);
                 }
             });
         }
