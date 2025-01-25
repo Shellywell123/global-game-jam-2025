@@ -82,7 +82,6 @@ end
 -- keyStates: input key pressed or not
 -- dt: miliseconds
 function Bubble:step(dt: number, keyStates: {string:boolean})
-    print(self.y)
     
     local cv: Vector2D = {x = 0, y = 0}
     if self.collision_vector then
