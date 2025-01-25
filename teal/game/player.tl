@@ -33,6 +33,7 @@ local record Bubble
     draw_x: integer
     draw_y: integer
     collision_vector: Vector2D
+    tint: string
 end
 
 local BubbleMetatable: metatable<Bubble> = {
@@ -46,7 +47,7 @@ end
 function Bubble.copy(b: Bubble): Bubble
     local instance: Bubble = {}
     setmetatable(instance, BubbleMetatable)
-    instance.canvas = Canvas.newCanvas(true)
+    instance.canvas = Canvas.newCanvas(true, nil, b.tint)
     instance.previousBubbleIndex = b.previousBubbleIndex
     instance.bubbleIndex = b.bubbleIndex
     instance.x = b.x
@@ -61,14 +62,15 @@ function Bubble.copy(b: Bubble): Bubble
     instance.draw_y = b.draw_x
     instance.invulnerableTime = b.invulnerableTime
     instance.collision_vector = b.collision_vector
+    instance.tint = b.tint
 
     return instance
 end
 
-function Bubble.new(index: integer, x?: integer, x_vel?: number, y?: integer): Bubble
+function Bubble.new(index: integer, x?: integer, x_vel?: number, y?: integer, tint?: string): Bubble
     local instance: Bubble = {}
     setmetatable(instance, BubbleMetatable)
-    instance.canvas = Canvas.newCanvas(true)
+    instance.canvas = Canvas.newCanvas(true, nil, tint)
     instance.previousBubbleIndex = -1
     instance.bubbleIndex = index
     instance.x = x or 30
@@ -83,6 +85,7 @@ function Bubble.new(index: integer, x?: integer, x_vel?: number, y?: integer): B
     instance.draw_y = 0
     instance.invulnerableTime = 0
     instance.collision_vector = nil
+    instance.tint = tint
     return instance
 end
 
