@@ -13,11 +13,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JR-Mitchell/wasmoon-teal-game-template.git"
+    "url": "git+https://github.com/RiFactor/global-game-jam-25.git"
   },
   "license": "GPL-3.0-only",
   "bugs": {
-    "url": "https://github.com/JR-Mitchell/wasmoon-teal-game-template/issues"
+    "url": "https://github.com/RiFactor/global-game-jam-25/issues"
   },
-  "homepage": "https://github.com/JR-Mitchell/wasmoon-teal-game-template#readme"
+  "homepage": "https://github.com/RiFactor/global-game-jam-25"
 }
