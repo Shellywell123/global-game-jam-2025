@@ -12,15 +12,13 @@ local record Collideable
     sprite: string
     sprite_xoffset: integer
     sprite_yoffset: integer
+    can_pop: boolean
 
     -- by default will just use a box with the size and shape
     -- returns a 2D unit vector that points from the middle of the collideable
     -- to the object
     -- assumes the object that is being considered is a circle
     collision_geometry: function(self: self, x: number, y: number, squared_radius: number) : Vector2D
-end
-
-local function squared_distance(x: number, y: number, other_x: number, other_y: number) : number
 end
 
 local function signum(x : number) : number
@@ -33,22 +31,89 @@ local function signum(x : number) : number
    end
 end
 
+local function line_circle_at_origin_determinant(x1: number, x2: number, y1: number, y2: number, squared_radius: number) : Vector2D
+
+    local dx = x2 - x1
+    local dy = y2 - y1
+    local dr2 = (dx * dx) + (dy * dy)
+    local determinant = x1 * y2 - y1 * x2
+
+    local discriminant =  squared_radius * dr2 - (determinant * determinant)
+
+    if discriminant <= 0 then
+        return nil
+    end
+
+    print(discriminant)
+
+    local X = (determinant * dy + signum(dy) * dx * math.sqrt(discriminant)) / dr2
+    local Y = (-determinant * dx + math.abs(dy) * math.sqrt(discriminant)) / dr2
+
+    if (X >= x1 - 1) and (X <= x2 + 1) and (Y >= y1 - 1) and (Y <= y2 + 1) then
+        return {x = X, y = Y}
+    end
+    return nil
+end
+
+local function line_circle_intersection(line_p1: Vector2D, line_p2: Vector2D, x_circ: number, y_circ: number, squared_radius: number) : Vector2D
+    return line_circle_at_origin_determinant(
+        line_p1.x - x_circ,
+        line_p2.x - x_circ,
+        line_p1.y - y_circ,
+        line_p2.y - y_circ,
+        squared_radius
+    )
+end
+
+local function to_basis_vector(v: Vector2D) : Vector2D
+    if math.abs(v.x) > math.abs(v.y) then
+        return {x = signum(v.x), y = 0 }
+    else
+        return {x = 0, y = signum(v.y) }
+    end
+end
+
+
 local function rectangular_geometry(self: Collideable, x: number, y: number, squared_radius: number) : Vector2D
-    -- calculate the closet point
-    local X = math.max(self.x, math.min(x, self.x + self.size_x))
-    local Y = math.max(self.offset_y + self.y, math.min(y - 1, self.offset_y + self.y + self.size_y))
+    local d = line_circle_intersection(
+        {
+            x = self.x,
+            y = self.y + self.size_y
+        },{
+            x = self.x + self.size_x,
+            y = self.y + self.size_y
+        },
+        x,
+        y - self.offset_y,
+        squared_radius
+    )
 
-    local dx = X - x
-    local dy = Y - y
+    if d then
+        return to_basis_vector(d)
+    end
 
-    local d =  dx*dx + dy*dy
+    d = line_circle_intersection(
+        {x = self.x, y = self.y},
+        {x = self.x, y = self.y + self.size_y},
+        x,
+        y - self.offset_y,
+        squared_radius
+    )
 
-    if d < squared_radius then
-        if math.abs(dx) > math.abs(dy) then
-            return {x = signum(dx), y = 0 }
-        else
-            return {x = 0, y = signum(dy) }
-        end
+    if d then
+        return to_basis_vector(d)
+    end
+
+    d = line_circle_intersection(
+        {x = self.x + self.size_x, y = self.y},
+        {x = self.x + self.size_x, y = self.y + self.size_y},
+        x,
+        y - self.offset_y,
+        squared_radius
+    )
+
+    if d then
+        return to_basis_vector(d)
     end
 
     return nil
@@ -61,8 +126,8 @@ local CollideableMetatable: metatable<Collideable> = {
 function Collideable.new(): Collideable
     local instance: Collideable = {}
     setmetatable(instance, CollideableMetatable)
-    instance.x = 50
-    instance.y = 200
+    instance.x = 0
+    instance.y = 0
     instance.offset_y = 0
 
     instance.size_x = 32
@@ -73,6 +138,7 @@ function Collideable.new(): Collideable
 
     instance.sprite = "items.png"
     instance.collision_geometry = rectangular_geometry
+    instance.can_pop = false
 
     return instance
 end
@@ -108,18 +174,29 @@ function CollideableSlice.new(): CollideableSlice
     setmetatable(instance, CollideableSliceMetatable)
     instance.objects = {}
     table.insert(instance.objects, Collideable.new())
+    table.insert(instance.objects, Collideable.new())
+    instance.objects[2].x = 32
+    table.insert(instance.objects, Collideable.new())
+    instance.objects[3].x = 64
+    table.insert(instance.objects, Collideable.new())
+    instance.objects[4].x = 96
+
+    table.insert(instance.objects, Collideable.new())
+    instance.objects[4].x = 224
+    instance.objects[4].sprite_xoffset = 1
+    instance.objects[4].can_pop = true
     return instance
 end
 
 -- takes the objects position and then calculates if there is a collision,
 -- returning the unit vector direction from the collideable to the object, else
 -- nil
-function CollideableSlice:collide(offset_y: number, x: number, y: number, squared_radius: number) : Vector2D
+function CollideableSlice:collide(offset_y: number, x: number, y: number, squared_radius: number) : {Vector2D, boolean}
     for _, obj in ipairs(self.objects) do
         obj.offset_y = offset_y
         local col = obj:collide(x, y, squared_radius)
         if col then
-            return col
+            return {col, obj.can_pop}
         end
     end
     return nil

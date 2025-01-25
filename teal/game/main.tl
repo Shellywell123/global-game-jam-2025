@@ -1,13 +1,12 @@
 local subprotocol = require("shared.subprotocol")
-local Background = require("game.background")
 local Buttons = require("game.buttons")
-local Player = require("game.player")
+local type GameState = require("game.gamestate")
+local MainState = require("game.states.main")
 
 global record Game
-    keyStates: {string:boolean}
-    background: Background
+    currentState: GameState
     buttons: Buttons
-    player: Player
+    keyStates: {string:boolean}
     socketOpen: boolean
     step: function(dt: number)
     draw: function()
@@ -23,9 +22,8 @@ Game.socketOpen = false
 
 function Game.init()
     Socket.open(subprotocol)
-    Game.background = Background.new()
+    Game.currentState = MainState.new()
     Game.buttons = Buttons.new()
-    Game.player = Player.new()
 end
 
 function Game.socketSend(message: string)
@@ -35,28 +33,12 @@ function Game.socketSend(message: string)
 end
 
 function Game.step(dt: number)
-    for _, bubble in ipairs(Game.player.bubbles) do
-        local radius = bubble:radius()
-        local squared_radius = radius * radius
-        bubble.collision_vector = nil
-        for _, bg_slice in ipairs(Game.background.slices) do
-            local v = bg_slice.collision_slice:collide(bg_slice.screenY, bubble.draw_x + radius, bubble.draw_y + radius, squared_radius)
-            if v then
-                bubble.collision_vector = v
-                break
-            end
-        end
-
-    end
-
-    Game.player:step(dt, Game.keyStates, Game.socketSend)
-    Game.background:step(dt)
+    Game.currentState:step(dt, Game.keyStates, Game.socketSend)
 end
 
 function Game.draw()
-    Game.background:draw()
     Game.buttons:draw()
-    Game.player:draw()
+    Game.currentState:draw()
 end
 
 function Game.keyUp(key: string)
@@ -65,17 +47,15 @@ end
 
 function Game.keyDown(key: string)
     Game.keyStates[key] = true
-    print("keyDown: "..key)
 end
 
 function Game.keyPress(key: string)
     Game.keyStates[key] = true
     Socket.send("keyPress: "..key)
-    print("keyPress: "..key)
 end
 
 function Game.pointerDown()
-    print("pressed")
+    -- noop
 end
 
 function Game.pointerUp()
@@ -110,11 +90,6 @@ function Game.websocketClosed(code: integer, reason: string)
 end
 
 function Game.websocketMessage(message: string)
-    print(message)
-    local _, _, x, y = string.find(message, "Position updated: x=(%d+%.?%d*), y=(%d+%.?%d*)")
-    if (x and y) then
-        print("From Lua: "..message)
-        Game.player:updatePosition(tonumber(x), tonumber(y))
-    end
+    -- currently noop
 end
 

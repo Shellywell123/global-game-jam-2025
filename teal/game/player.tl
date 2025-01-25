@@ -25,6 +25,7 @@ local record Bubble
     -- internal incremental ticker
     ticker: number
     ticker_speed: number
+    invulnerableTime: number
     -- must be integral: the pixels into which to draw the bubble
     draw_x: integer
     draw_y: integer
@@ -39,6 +40,26 @@ function Bubble:radius(): number
     return BUBBLE_DIAMETER[self.bubbleIndex] / 2
 end
 
+function Bubble.copy(b: Bubble): Bubble
+    local instance: Bubble = {}
+    setmetatable(instance, BubbleMetatable)
+    instance.canvas = Canvas.newCanvas(true)
+    instance.previousBubbleIndex = b.previousBubbleIndex
+    instance.bubbleIndex = b.bubbleIndex
+    instance.x = b.x
+    instance.y = b.y
+    instance.x_vel = b.x_vel
+    instance.y_vel = b.y_vel
+    instance.ticker_speed = b.ticker_speed
+    instance.ticker = b.ticker
+    instance.draw_x = b.draw_x
+    instance.draw_y = b.draw_x
+    instance.invulnerableTime = b.invulnerableTime
+    instance.collision_vector = b.collision_vector
+
+    return instance
+end
+
 function Bubble.new(): Bubble
     local instance: Bubble = {}
     setmetatable(instance, BubbleMetatable)
@@ -46,13 +67,14 @@ function Bubble.new(): Bubble
     instance.previousBubbleIndex = -1
     instance.bubbleIndex = 0
     instance.x = 30
-    instance.y = config.displayHeight - 16
+    instance.y = config.displayHeight - 64
     instance.x_vel = 0.2
     instance.y_vel = 0.2
     instance.ticker_speed = 1.1
     instance.ticker = 0
     instance.draw_x = 0
     instance.draw_y = 0
+    instance.invulnerableTime = 0
     instance.collision_vector = nil
     return instance
 
@@ -113,6 +135,10 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     -- increment the internal ticker for animations
     self.ticker = math.fmod(self.ticker + (dt * self.ticker_speed), 360)
 
+    if self.invulnerableTime > 0 then
+        self.invulnerableTime = self.invulnerableTime - dt
+    end
+
     -- have to keep these seperate to avoid rounding errors
     self.draw_x = math.floor(self.x + math.sin(self.ticker * DEGREES_TO_RADIANS) * OSCILLATE_AMPLITUDE)
     self.draw_y = math.floor(self.y)
@@ -159,6 +185,30 @@ function Player.new(): Player
     instance.bubbles[3].bubbleIndex = 3
     instance.bubbles[3].ticker_speed = 0.9
     return instance
+end
+
+function Player:pop(i: integer)
+    -- are we invulnerable still?
+    if self.bubbles[i].invulnerableTime > 0 then
+        return
+    end
+
+    self.bubbles[i].bubbleIndex = self.bubbles[i].bubbleIndex - 1
+
+    if self.bubbles[i].bubbleIndex < 0 then
+        return
+    end
+
+    self.bubbles[i].x = self.bubbles[i].x - 5
+    self.bubbles[i].y = self.bubbles[i].y + 10
+
+    self.bubbles[i].invulnerableTime = self.bubbles[i].invulnerableTime + INVULNERABLE_TIME
+
+    -- todo: slightly randomise the velocities
+    local bubble_copy = Bubble.copy(self.bubbles[i])
+    bubble_copy.x = bubble_copy.x + 10
+
+    table.insert(self.bubbles, bubble_copy)
 end
 
 function Player:step(dt: number, keyStates: {string:boolean}, socketSend: function(string))
