@@ -12,6 +12,7 @@ local record Collideable
     sprite: string
     sprite_xoffset: integer
     sprite_yoffset: integer
+    can_pop: boolean
 
     -- by default will just use a box with the size and shape
     -- returns a 2D unit vector that points from the middle of the collideable
@@ -71,6 +72,7 @@ local function to_basis_vector(v: Vector2D) : Vector2D
         return {x = 0, y = signum(v.y) }
     end
 end
+
 
 local function rectangular_geometry(self: Collideable, x: number, y: number, squared_radius: number) : Vector2D
     local d = line_circle_intersection(
@@ -136,6 +138,7 @@ function Collideable.new(): Collideable
 
     instance.sprite = "items.png"
     instance.collision_geometry = rectangular_geometry
+    instance.can_pop = false
 
     return instance
 end
@@ -177,18 +180,23 @@ function CollideableSlice.new(): CollideableSlice
     instance.objects[3].x = 64
     table.insert(instance.objects, Collideable.new())
     instance.objects[4].x = 96
+
+    table.insert(instance.objects, Collideable.new())
+    instance.objects[4].x = 224
+    instance.objects[4].sprite_xoffset = 1
+    instance.objects[4].can_pop = true
     return instance
 end
 
 -- takes the objects position and then calculates if there is a collision,
 -- returning the unit vector direction from the collideable to the object, else
 -- nil
-function CollideableSlice:collide(offset_y: number, x: number, y: number, squared_radius: number) : Vector2D
+function CollideableSlice:collide(offset_y: number, x: number, y: number, squared_radius: number) : {Vector2D, boolean}
     for _, obj in ipairs(self.objects) do
         obj.offset_y = offset_y
         local col = obj:collide(x, y, squared_radius)
         if col then
-            return col
+            return {col, obj.can_pop}
         end
     end
     return nil
