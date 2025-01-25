@@ -9,7 +9,7 @@ global config: Config = {
         "duck.png",
         "ring.png",
         "sock.png",
-        "apple.png"
+        "apple.png",
         "items.png"
     },
     luaFilenames = {
