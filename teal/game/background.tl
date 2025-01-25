@@ -3,8 +3,6 @@ require("game.const")
 local BackgroundSlice = require("game.backgroundslice")
 
 local GAME_HEIGHT <const> = 1024
-local SPEED <const> = 0.03
-local PIPE_SPEED_RATIO <const> = 2
 
 local record Background
     canvas: Canvas.SubCanvas
@@ -17,9 +15,9 @@ local BackgroundMetatable: metatable<Background> = {
 }
 
 function Background:step(dt: number)
-    self.y = self.y + SPEED*dt
+    self.y = self.y + BACKGROUND_SPEED*dt
     for _,slice in ipairs(self.slices) do
-        slice.screenY = slice.screenY + SPEED*PIPE_SPEED_RATIO*dt
+        slice.screenY = slice.screenY + PIPE_SPEED*dt
     end
 end
 
