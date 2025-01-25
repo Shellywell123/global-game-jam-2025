@@ -165,7 +165,7 @@ end
 
 local PlayerMetatable: metatable<Player> = {
     __index = Player,
- }
+}
 
 function Player.new(bubbles?: {Bubble}): Player
     local instance: Player = {}
