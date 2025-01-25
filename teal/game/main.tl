@@ -14,6 +14,8 @@ global record Game
     keyUp: function(key: string)
     keyDown: function(key: string)
     keyPress: function(key: string)
+    pointerDown: function()
+    pointerUp: function()
 end
 
 Game.keyStates = {}
@@ -57,6 +59,35 @@ function Game.keyPress(key: string)
     print("keyPress: "..key)
 end
 
+function Game.pointerDown()
+    print("pressed")
+end
+
+-- i know the function it empty, its needed, trust me bro
+function Game.pointerUp()
+end
+
+function Game.onButton(x: number, y: number)
+    print("onTouchStart: x="..x..", y="..y)
+    local move = Game.buttons:onClicked(x, y)
+    if (move == 0) then
+        return
+    elseif (move == -1) then
+        Game.keyPress("touchLeft")
+    elseif (move == 1) then
+        Game.keyPress("touchRight")
+    end
+
+    Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
+end
+
+function Game.onButtonRelease()
+    print("released")
+    -- ben knows this is hacky but just let it slide okay
+    Game.keyStates["touchLeft"] = false
+    Game.keyStates["touchRight"] = false
+end
+
 function Game.websocketOpened()
     Socket.send("Hello World!")
     Game.socketOpen = true
@@ -74,34 +105,4 @@ function Game.websocketMessage(message: string)
         print("From Lua: "..message)
         Game.character:updatePosition(tonumber(x), tonumber(y))
     end
-end
-
-function Game.onTouchStart(x: number, y: number)
-    print("onTouchStart: x="..x..", y="..y)
-    local move = Game.buttons:onClicked(x, y)
-    if (move == 0) then
-        return
-    elseif (move == -1) then
-        Game.keyPress("a")
-    elseif (move == 1) then
-        Game.keyPress("d")
-    end
-
-    Game.character:step(0, Game.keyStates, Game.socketSend)
-    Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
-end
-
-function Game.onTouchEnd(x: number, y: number)
-    print("onTouchEnd: x="..x..", y="..y)
-    local move = Game.buttons:onClicked(x, y)
-    if (move == 0) then
-        return
-    elseif (move == -1) then
-        Game.keyPress("")
-    elseif (move == 1) then
-        Game.keyPress("")
-    end
-
-    Game.character:step(0, Game.keyStates, Game.socketSend)
-    Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
 end

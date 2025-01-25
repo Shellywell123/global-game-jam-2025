@@ -29,10 +29,10 @@ function Character:step(dt: number, keyStates: {string:boolean}, socketSend: fun
     local left = false
     local right = false
 
-    if (keyStates["a"] or keyStates["ArrowLeft"]) then
+    if (keyStates["a"] or keyStates["ArrowLeft"] or keyStates["touchLeft"]) then
         left = true
     end
-    if (keyStates["d"] or keyStates["ArrowRight"]) then
+    if (keyStates["d"] or keyStates["ArrowRight"] or keyStates["touchRight"]) then
         right = true
     end
 

@@ -239,34 +239,24 @@ async function execute() {
             });
         }
 
-        // if (game["onClick"] != undefined) {
-        //     canvasElement.addEventListener('click', (event) => {
-        //         let x,y;
-        //         [x,y] = transformPointToCanvas(event.pageX, event.pageY);
-        //         if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
-        //             game.onClick(x, y);
-        //         }
-        //     });
-        // }
-
-        if (game["touchStart"] != undefined) {
-            document.addEventListener('touchstart', (event) => {
-                console.log("touchstart")
+        if (game["pointerDown"] != undefined) {
+            document.addEventListener('pointerdown', (event) => {
+                console.log("pointerdown")
                 let x,y;
                 [x,y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
-                    game.onTouchStart(x, y);
+                    game.onButton(x, y);
                 }
             });
         }
 
-        if (game["touchEnd"] != undefined) {
-            document.addEventListener('touchend', (event) => {
-                console.log("touchend")
+        if (game["pointerUp"] != undefined) {
+            document.addEventListener('pointerup', (event) => {
+                console.log("pointerup")
                 let x,y;
                 [x,y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
-                    game.onTouchEnd(x, y);
+                    game.onButtonRelease();
                 }
             });
         }
