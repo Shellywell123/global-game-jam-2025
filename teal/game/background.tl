@@ -1,8 +1,8 @@
 require("shared.init")
+require("game.const")
 local BackgroundSlice = require("game.backgroundslice")
 
 local GAME_HEIGHT <const> = 1024
-local TILE_SIZE <const> = 32
 local SPEED <const> = 0.03
 local PIPE_SPEED_RATIO <const> = 2
 

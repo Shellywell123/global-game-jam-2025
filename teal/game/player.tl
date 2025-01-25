@@ -1,4 +1,5 @@
 require("shared.init")
+require("game.const")
 
 local DEGREES_TO_RADIANS <const> = 3.1415 / 180
 local OSCILLATE_AMPLITUDE <const> = 2
@@ -64,9 +65,16 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     end
     if (keyStates["a"] and not keyStates["d"]) then
         self.x = self.x - self.x_vel * dt
+        if (self.x <= PIPE_SIZE)then
+            self.x = PIPE_SIZE
+        end
     end
     if (keyStates["d"] and not keyStates["a"]) then
         self.x = self.x + self.x_vel * dt
+        local boundary = config.displayWidth - BUBBLE_DIAMETER[self.bubbleIndex] - PIPE_SIZE
+        if (self.x >=(boundary))then
+            self.x = (boundary)
+        end
     end
     -- increment the internal ticker for animations
     self.ticker = math.fmod(self.ticker + (dt * self.ticker_speed), 360)
@@ -107,11 +115,13 @@ function Player.new(): Player
     instance.bubbles[2].x_vel = 0.18
     instance.bubbles[2].bubbleIndex = 1
     instance.bubbles[2].ticker_speed = 1.0
+    instance.bubbles[2].y = 50
 
     instance.bubbles[3].x = 120
     instance.bubbles[3].x_vel = 0.10
     instance.bubbles[3].bubbleIndex = 3
     instance.bubbles[3].ticker_speed = 0.9
+    instance.bubbles[3].y = 100
     return instance
 end
 

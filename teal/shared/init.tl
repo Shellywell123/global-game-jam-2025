@@ -11,7 +11,8 @@ global config: Config = {
         "game/player.lua",
         "game/backgroundslice.lua",
         "shared/subprotocol.lua",
-        "shared/init.lua"
+        "shared/init.lua",
+        "game/const.lua"
     },
     blankColour = "black",
     pageBackgroundColour = "powderblue",
