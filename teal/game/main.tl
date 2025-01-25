@@ -2,8 +2,9 @@ local subprotocol = require("shared.subprotocol")
 local Background = require("game.background")
 local Buttons = require("game.buttons")
 local Player = require("game.player")
+local type GameState = require("game.gamestate")
 
-global record Game
+global record Game is GameState
     keyStates: {string:boolean}
     background: Background
     buttons: Buttons
