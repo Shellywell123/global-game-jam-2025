@@ -1,7 +1,6 @@
 services:
   bubble:
     container_name: bubble
-    build:
-      context: .
+    image: shellywell123/bubbles:latest
     ports:
       - 8080:8080
