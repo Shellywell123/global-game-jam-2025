@@ -16,8 +16,8 @@ function Character.new(): Character
     setmetatable(instance, CharacterMetatable)
     instance.speed = 0.5
     instance.spriteIndex = 0
-    instance.x = 300
-    instance.y = 400
+    instance.x = 30
+    instance.y = 40
     instance.canvas = Canvas.newCanvas(true)
     return instance
 end
