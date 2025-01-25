@@ -101,7 +101,7 @@ function registerWebsocketCallbacks(triggerOpen) {
                     game.websocketClosed(event.code, event.reason);
                 }
             }
-            
+
             if (game["websocketError"] != undefined) {
                 websocket.onerror = function() {
                     game.websocketError();
@@ -120,6 +120,11 @@ const CanvasCalls = {
         const newCanvas = newCanvasElement.getContext("2d");
 
         const subCanvas = {
+            // sx: sub-x -- selects location on sprite sheet
+            // sy: sub-y
+            // sw/sh: width and height
+            // dx, dy: location to place the sprite
+            // height and width
             drawImage: function(path, sx, sy, sw, sh, dx, dy, dw, dh) {
                 if (imageMap.has(path)) {
                     const bmp = imageMap.get(path);
