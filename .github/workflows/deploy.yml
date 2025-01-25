@@ -1,7 +1,10 @@
 name: Deploy
 
 on:
-  # No changes
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -19,4 +22,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: akoskm/my-image:latest
+          tags: shellywell123/bubbles:latest
