@@ -1,15 +1,19 @@
 # Global Game Jam 2025
 ```
-                                                   __
-                                                 /    \
-    ██████╗ ███████╗██╗   0  ██████╗██╗  ██╗  0 |    ) | 
-    ██╔══██╗██╔════╝██║  .  ██╔════╝██║  ██║ ( ) \ __ /
-    ██████╔╝█████╗  ██║   ( ██║     ███████║ o O ( )
-    ██╔══██╗██╔══╝  ██║     ██║     ██╔══██║. o .
-    ██████╔╝███████╗███████╗╚██████╗██║  ██║ .
-    ╚═════╝ ╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝.
+                                                __
+                                              /    \   
+ ██████╗ ███████╗██╗   0  ██████╗██╗  ██╗  0 |    ) |  Global Game Jam 2025
+ ██╔══██╗██╔════╝██║  .  ██╔════╝██║  ██║ ( ) \ __ /   Southampton
+ ██████╔╝█████╗  ██║   ( ██║     ███████║ o O ( )      Theme of "Bubbles"
+ ██╔══██╗██╔══╝  ██║     ██║     ██╔══██║. o .         4 Devs
+ ██████╔╝███████╗███████╗╚██████╗██║  ██║ .            48 Hours
+ ╚═════╝ ╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝.             ထ Quavers
+
+
 ```
-Theme: Bubbles
+Welcome to the wobbly world of Belch, where you play as 'Bub' the Bubble, a plucky little sphere with a big dream: to float your way to freedom! But beware, the world is full of risky rings, dirty ducks, ageing apples and soggy socks just waiting to burst your bubble.
+Play solo or race your friends, making the journey even more challenging and hilarious as each pop splits Bob into smaller and smaller bubbles! Can you make it to the op of the pops?
+Float, dodge, and giggle your way through this bubbly adventure, and remember: in the world of bubbles, it's pop or be popped.
 
 ## Building
 ### Requirements
