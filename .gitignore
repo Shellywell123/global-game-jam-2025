@@ -1,3 +1,4 @@
 /node_modules
 /dist
 /src/assets/**/*.lua
+ben_hacky_run.sh
