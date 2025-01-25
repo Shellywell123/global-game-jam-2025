@@ -1,11 +1,11 @@
 local subprotocol = require("shared.subprotocol")
 local Background = require("game.background")
-local Character = require("game.character")
+local Player = require("game.player")
 
 global record Game
     keyStates: {string:boolean}
     background: Background
-    character: Character
+    player: Player
     socketOpen: boolean
     step: function(dt: number)
     draw: function()
@@ -20,7 +20,7 @@ Game.socketOpen = false
 function Game.init()
     Socket.open(subprotocol)
     Game.background = Background.new()
-    Game.character = Character.new()
+    Game.player = Player.new()
 end
 
 function Game.socketSend(message: string)
@@ -30,12 +30,12 @@ function Game.socketSend(message: string)
 end
 
 function Game.step(dt: number)
-    Game.character:step(dt, Game.keyStates, Game.socketSend)
+    Game.player:step(dt, Game.keyStates, Game.socketSend)
 end
 
 function Game.draw()
     Game.background:draw()
-    Game.character:draw()
+    Game.player:draw()
 end
 
 function Game.keyUp(key: string)
@@ -61,12 +61,12 @@ function Game.websocketMessage(message: string)
     local _, _, x, y = string.find(message, "Position updated: x=(%d+%.?%d*), y=(%d+%.?%d*)")
     if (x and y) then
         print("From Lua: "..message)
-        Game.character:updatePosition(tonumber(x), tonumber(y))
+        Game.player:updatePosition(tonumber(x), tonumber(y))
     end
 end
 
 function Game.onClick(x: number, y: number)
     -- The -32 accounts for sprite width
-    Game.character:updatePosition(x - 32, y - 32)
-    Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
+    -- Game.player:updatePosition(x - 32, y - 32)
+    -- Socket.send("Position updated: x="..tostring(Game.player.x)..", y="..tostring(Game.player.y))
 end
