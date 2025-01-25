@@ -2,12 +2,20 @@ require("shared.init")
 
 local DEGREES_TO_RADIANS <const> = 3.1415 / 180
 local OSCILLATE_AMPLITUDE <const> = 2
+local SPRITE_STRIDE <const> = 32
+local BUBBLE_DIAMETER <const> = {
+    -- maps from bubble "level" to the diameter in pixels
+    [0] = 8,
+    [1] = 16,
+    [2] = 24,
+    [3] = 32
+}
 
 -- An object that represents a single bubble
 local record Bubble
     canvas: Canvas.SubCanvas
-    previousSpriteIndex: integer
-    spriteIndex: integer
+    previousBubbleIndex: integer
+    bubbleIndex: integer
     x: number
     y: number
     x_vel: number
@@ -28,8 +36,8 @@ function Bubble.new(): Bubble
     local instance: Bubble = {}
     setmetatable(instance, BubbleMetatable)
     instance.canvas = Canvas.newCanvas(true)
-    instance.previousSpriteIndex = -1
-    instance.spriteIndex = 0
+    instance.previousBubbleIndex = -1
+    instance.bubbleIndex = 0
     instance.x = 30
     instance.y = config.displayHeight - 16
     instance.x_vel = 0.2
@@ -55,16 +63,13 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
         self.y = self.y + self.y_vel * dt
     end
     if (keyStates["a"] and not keyStates["d"]) then
-        self.spriteIndex = 0
-
         self.x = self.x - self.x_vel * dt
     end
     if (keyStates["d"] and not keyStates["a"]) then
-        self.spriteIndex = 1
         self.x = self.x + self.x_vel * dt
     end
     -- increment the internal ticker for animations
-    self.ticker = math.fmod((self.ticker + dt) * self.ticker_speed, 360)
+    self.ticker = math.fmod(self.ticker + (dt * self.ticker_speed), 360)
 
     -- have to keep these seperate to avoid rounding errors
     self.draw_x = math.floor(self.x + math.sin(self.ticker * DEGREES_TO_RADIANS) * OSCILLATE_AMPLITUDE)
@@ -72,10 +77,11 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
 end
 
 function Bubble:draw()
-    if (self.spriteIndex ~= self.previousSpriteIndex) then
+    if (self.bubbleIndex ~= self.previousBubbleIndex) then
+        local size = BUBBLE_DIAMETER[self.bubbleIndex]
         self.canvas.clearCanvas()
-        self.canvas.drawImage("bubble.png", 0, 0, 64, 64, 0, 0, 64, 64)
-        self.previousSpriteIndex = self.spriteIndex
+        self.canvas.drawImage("bubble.png", self.bubbleIndex * SPRITE_STRIDE, 0, size, size, 0, 0, size, size)
+        self.previousBubbleIndex = self.bubbleIndex
     end
     self.canvas.draw(self.draw_x, self.draw_y)
 end
@@ -96,8 +102,16 @@ function Player.new(): Player
     instance.bubbles = {}
     table.insert(instance.bubbles, Bubble.new())
     table.insert(instance.bubbles, Bubble.new())
+    table.insert(instance.bubbles, Bubble.new())
     instance.bubbles[2].x = 80
-    instance.bubbles[2].x_vel = 0.22
+    instance.bubbles[2].x_vel = 0.18
+    instance.bubbles[2].bubbleIndex = 1
+    instance.bubbles[2].ticker_speed = 1.0
+
+    instance.bubbles[3].x = 120
+    instance.bubbles[3].x_vel = 0.10
+    instance.bubbles[3].bubbleIndex = 3
+    instance.bubbles[3].ticker_speed = 0.9
     return instance
 end
 
