@@ -7,6 +7,7 @@ local record Collideable
     y: number
     size_x: number
     size_y: number
+    offset_y: number
     sprite: string
     sprite_xoffset: integer
     sprite_yoffset: integer
@@ -34,7 +35,7 @@ end
 local function rectangular_geometry(self: Collideable, x: number, y: number, squared_radius: number) : {number}
     -- calculate the closet point
     local X = math.max(self.x, math.min(x, self.x + self.size_x))
-    local Y = math.max(self.y, math.min(y - 1, self.y + self.size_y))
+    local Y = math.max(self.offset_y + self.y, math.min(y - 1, self.offset_y + self.y + self.size_y))
 
     local dx = X - x
     local dy = Y - y
@@ -61,6 +62,7 @@ function Collideable.new(): Collideable
     setmetatable(instance, CollideableMetatable)
     instance.x = 50
     instance.y = 200
+    instance.offset_y = 0
 
     instance.size_x = 32
     instance.size_y = 16
@@ -78,15 +80,15 @@ function Collideable:collide(x: number, y: number, squared_radius: number) : {nu
     return self:collision_geometry(x, y, squared_radius)
 end
 
-function Collideable:draw(canvas: Canvas.SubCanvas, x: number, y: number)
+function Collideable:draw(canvas: Canvas.SubCanvas)
     canvas.drawImage(
         self.sprite,
         self.sprite_xoffset * config.spriteDimensions,
         self.sprite_yoffset * config.spriteDimensions,
         self.size_x,
         self.size_y,
-        self.x + x,
-        self.y + y,
+        self.x,
+        self.y,
         self.size_x,
         self.size_y
     )
@@ -111,8 +113,9 @@ end
 -- takes the objects position and then calculates if there is a collision,
 -- returning the unit vector direction from the collideable to the object, else
 -- nil
-function CollideableSlice:collide(x: number, y: number, squared_radius: number) : {number}
+function CollideableSlice:collide(offset_y: number, x: number, y: number, squared_radius: number) : {number}
     for _, obj in ipairs(self.objects) do
+        obj.offset_y = offset_y
         local col = obj:collide(x, y, squared_radius)
         if col then
             return col
@@ -121,9 +124,9 @@ function CollideableSlice:collide(x: number, y: number, squared_radius: number) 
     return nil
 end
 
-function CollideableSlice:draw(canvas: Canvas.SubCanvas, x: number, y: number)
+function CollideableSlice:draw(canvas: Canvas.SubCanvas)
     for _, obj in ipairs(self.objects) do
-        obj:draw(canvas, x, y)
+        obj:draw(canvas)
     end
 end
 

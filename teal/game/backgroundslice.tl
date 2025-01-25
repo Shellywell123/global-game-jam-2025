@@ -18,7 +18,7 @@ local BackgroundSliceMetatable: metatable<BackgroundSlice> = {
 
 function BackgroundSlice:draw()
     self.canvas.draw(0, math.floor(self.screenY))
-    self.collision_slice:draw(self.canvas, 0, self.screenY)
+    self.collision_slice:draw(self.canvas)
 end
 
 function BackgroundSlice.new(y: integer): BackgroundSlice
