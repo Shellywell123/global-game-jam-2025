@@ -22,6 +22,7 @@ global config: Config = {
         "game/backgroundslice.lua",
         "game/collideable.lua",
         "shared/subprotocol.lua",
+        "shared/protocols.lua",
         "shared/init.lua",
         "game/const.lua",
         "game/startbackground.lua",
