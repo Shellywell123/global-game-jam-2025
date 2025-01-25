@@ -2,6 +2,7 @@ local subprotocol = require("shared.subprotocol")
 local Buttons = require("game.buttons")
 local type GameState = require("game.gamestate")
 local MainState = require("game.states.main")
+local StartState = require("game.states.start")
 
 global record Game
     currentState: GameState
@@ -22,7 +23,7 @@ Game.socketOpen = false
 
 function Game.init()
     Socket.open(subprotocol)
-    Game.currentState = MainState.new()
+    Game.currentState = StartState.new()
     Game.buttons = Buttons.new()
 end
 

@@ -22,7 +22,9 @@ global config: Config = {
         "shared/subprotocol.lua",
         "shared/init.lua",
         "game/const.lua",
-        "game/states/main.lua"
+        "game/startbackground.lua",
+        "game/states/main.lua",
+        "game/states/start.lua"
     },
     blankColour = "black",
     pageBackgroundColour = "powderblue",
