@@ -15,7 +15,7 @@ global record Canvas
         clearCanvas: function()
     end
 
-    newCanvas: function(transparent: boolean): SubCanvas
+    newCanvas: function(transparent: boolean, height?: integer): SubCanvas
 end
 
 global record Socket
