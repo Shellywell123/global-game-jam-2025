@@ -1,5 +1,6 @@
 require("shared.init")
 require("game.const")
+local type Vector2D = require("game.vector2d")
 
 local DEGREES_TO_RADIANS <const> = 3.1415 / 180
 local OSCILLATE_AMPLITUDE <const> = 2
@@ -27,7 +28,7 @@ local record Bubble
     -- must be integral: the pixels into which to draw the bubble
     draw_x: integer
     draw_y: integer
-    collision_vector: {number}
+    collision_vector: Vector2D
 end
 
 local BubbleMetatable: metatable<Bubble> = {
@@ -61,12 +62,12 @@ end
 -- dt: miliseconds
 function Bubble:step(dt: number, keyStates: {string:boolean})
 
-    local cv: {number} = {[0] = 0, [1] = 0}
+    local cv: Vector2D = {x = 0, y = 0}
     if self.collision_vector then
         cv = self.collision_vector
     end
 
-    if cv[1] ~= 0 then
+    if cv.y ~= 0 then
         self.y = self.y + 2 * BACKGROUND_SPEED * dt
     end
 
@@ -74,12 +75,12 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     local right = false
 
     if (keyStates["a"] or keyStates["ArrowLeft"] or keyStates["touchLeft"]) then
-        if cv[0] == 0 then
+        if cv.x == 0 then
             left = true
         end
     end
     if (keyStates["d"] or keyStates["ArrowRight"] or keyStates["touchRight"]) then
-        if cv[0] == 0 then
+        if cv.x == 0 then
             right = true
         end
     end
@@ -99,12 +100,12 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     end
 
     if (keyStates["w"] and not keyStates["s"]) then
-        if cv[1] == 0 then
+        if cv.y == 0 then
             self.y = self.y - self.y_vel * dt
         end
     end
     if (keyStates["s"] and not keyStates["w"]) then
-        if cv[1] == 0 then
+        if cv.y == 0 then
             self.y = self.y + self.y_vel * dt
         end
     end
