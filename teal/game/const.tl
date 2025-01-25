@@ -4,4 +4,5 @@ global BACKGROUND_SPEED <const> = 0.03
 global PIPE_SPEED_RATIO <const> = 2
 global PIPE_SPEED <const> = BACKGROUND_SPEED * PIPE_SPEED_RATIO
 global INVULNERABLE_TIME <const> = 2000
+global SPRITE_STRIDE <const> = 32
 

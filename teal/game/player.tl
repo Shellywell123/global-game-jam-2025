@@ -4,7 +4,8 @@ local type Vector2D = require("game.vector2d")
 
 local DEGREES_TO_RADIANS <const> = 3.1415 / 180
 local OSCILLATE_AMPLITUDE <const> = 2
-local SPRITE_STRIDE <const> = 32
+local EPHEMERAL_ACCELERATION <const> = 0.0002
+local MAX_EPHEMERAL_VELOCITY <const> = 0.2
 local BUBBLE_DIAMETER <const> = {
     -- maps from bubble "level" to the diameter in pixels
     [0] = 8,
@@ -22,6 +23,8 @@ local record Bubble
     y: number
     x_vel: number
     y_vel: number
+    ephemeral_x_vel: number
+    ephemeral_y_vel: number
     -- internal incremental ticker
     ticker: number
     ticker_speed: number
@@ -34,7 +37,7 @@ end
 
 local BubbleMetatable: metatable<Bubble> = {
     __index = Bubble,
- }
+}
 
 function Bubble:radius(): number
     return BUBBLE_DIAMETER[self.bubbleIndex] / 2
@@ -50,6 +53,8 @@ function Bubble.copy(b: Bubble): Bubble
     instance.y = b.y
     instance.x_vel = b.x_vel
     instance.y_vel = b.y_vel
+    instance.ephemeral_x_vel = b.ephemeral_x_vel
+    instance.ephemeral_y_vel = b.ephemeral_y_vel
     instance.ticker_speed = b.ticker_speed
     instance.ticker = b.ticker
     instance.draw_x = b.draw_x
@@ -70,6 +75,8 @@ function Bubble.new(index: integer, x?: integer, x_vel?: number, y?: integer): B
     instance.y = y or config.displayHeight - 64
     instance.x_vel = x_vel or 0.2
     instance.y_vel = 0.2
+    instance.ephemeral_x_vel = 0
+    instance.ephemeral_y_vel = 0
     instance.ticker_speed = 1.1
     instance.ticker = 0
     instance.draw_x = 0
@@ -114,10 +121,6 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     end
     if (right and not left) then
         self.x = self.x + self.x_vel * dt
-        local boundary = config.displayWidth - BUBBLE_DIAMETER[self.bubbleIndex] - PIPE_SIZE
-        if (self.x >=(boundary))then
-            self.x = (boundary)
-        end
     end
 
     if (keyStates["w"] and not keyStates["s"]) then
@@ -136,6 +139,21 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
 
     if self.invulnerableTime > 0 then
         self.invulnerableTime = self.invulnerableTime - dt
+    end
+
+    -- add temporary velocities
+    if (self.ephemeral_y_vel > 0) or (self.ephemeral_x_vel > 0) then
+        self.y = self.y + self.ephemeral_y_vel * dt
+        self.x = self.x + self.ephemeral_x_vel * dt
+        -- reduce temporary velocities
+        self.ephemeral_x_vel = math.max(0, self.ephemeral_x_vel - dt * EPHEMERAL_ACCELERATION)
+        self.ephemeral_y_vel = math.max(0, self.ephemeral_y_vel - dt * EPHEMERAL_ACCELERATION)
+    end
+
+    -- check boundary collision
+    local boundary = config.displayWidth - BUBBLE_DIAMETER[self.bubbleIndex] - PIPE_SIZE
+    if (self.x >=(boundary))then
+        self.x = (boundary)
     end
 
     -- have to keep these seperate to avoid rounding errors
@@ -191,26 +209,29 @@ function Player.newTest(): Player
     return instance
 end
 
-function Player:pop(i: integer)
-    -- are we invulnerable still?
-    if self.bubbles[i].invulnerableTime > 0 then
-        return
-    end
+function Player:wouldPop(i: integer) : boolean
+    -- are we invulnerable still? return true if we would pop
+    return self.bubbles[i].invulnerableTime <= 0
+end
 
+function Player:pop(i: integer)
     self.bubbles[i].bubbleIndex = self.bubbles[i].bubbleIndex - 1
 
     if self.bubbles[i].bubbleIndex < 0 then
         return
     end
 
-    self.bubbles[i].x = self.bubbles[i].x - 5
     self.bubbles[i].y = self.bubbles[i].y + 10
+
+    self.bubbles[i].ephemeral_y_vel = math.random() * MAX_EPHEMERAL_VELOCITY
+    self.bubbles[i].ephemeral_x_vel = (2 * math.random() - 1) * MAX_EPHEMERAL_VELOCITY / 2
 
     self.bubbles[i].invulnerableTime = self.bubbles[i].invulnerableTime + INVULNERABLE_TIME
 
     -- todo: slightly randomise the velocities
     local bubble_copy = Bubble.copy(self.bubbles[i])
-    bubble_copy.x = bubble_copy.x + 10
+    bubble_copy.ephemeral_y_vel = math.random() * MAX_EPHEMERAL_VELOCITY
+    bubble_copy.ephemeral_x_vel = (2 * math.random() - 1) * MAX_EPHEMERAL_VELOCITY / 2
 
     table.insert(self.bubbles, bubble_copy)
 end
