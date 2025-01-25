@@ -39,15 +39,15 @@ function Bubble:radius(): number
     return BUBBLE_DIAMETER[self.bubbleIndex] / 2
 end
 
-function Bubble.new(): Bubble
+function Bubble.new(index: integer, x?: integer, x_vel?: number, y?: integer): Bubble
     local instance: Bubble = {}
     setmetatable(instance, BubbleMetatable)
     instance.canvas = Canvas.newCanvas(true)
     instance.previousBubbleIndex = -1
-    instance.bubbleIndex = 0
-    instance.x = 30
-    instance.y = config.displayHeight - 16
-    instance.x_vel = 0.2
+    instance.bubbleIndex = index
+    instance.x = x or 30
+    instance.y = y or config.displayHeight - 16
+    instance.x_vel = x_vel or 0.2
     instance.y_vel = 0.2
     instance.ticker_speed = 1.1
     instance.ticker = 0
@@ -55,7 +55,6 @@ function Bubble.new(): Bubble
     instance.draw_y = 0
     instance.collision_vector = nil
     return instance
-
 end
 
 -- keyStates: input key pressed or not
@@ -142,20 +141,25 @@ local PlayerMetatable: metatable<Player> = {
     __index = Player,
  }
 
-function Player.new(): Player
+function Player.new(bubbles?: {Bubble}): Player
     local instance: Player = {}
     setmetatable(instance, PlayerMetatable)
-    instance.bubbles = {}
-    table.insert(instance.bubbles, Bubble.new())
-    table.insert(instance.bubbles, Bubble.new())
-    table.insert(instance.bubbles, Bubble.new())
-    instance.bubbles[2].x = 80
-    instance.bubbles[2].x_vel = 0.18
+    instance.bubbles = bubbles or {
+        Bubble.new(1, 80, 0.18)
+    }
+    return instance
+end
+
+-- For testing 3 bubbles at once
+function Player.newTest(): Player
+    local instance = Player.new {
+        Bubble.new(0),
+        Bubble.new(1, 80, 0.18),
+        Bubble.new(2, 120, 0.10)
+    }
     instance.bubbles[2].bubbleIndex = 1
     instance.bubbles[2].ticker_speed = 1.0
 
-    instance.bubbles[3].x = 120
-    instance.bubbles[3].x_vel = 0.10
     instance.bubbles[3].bubbleIndex = 3
     instance.bubbles[3].ticker_speed = 0.9
     return instance

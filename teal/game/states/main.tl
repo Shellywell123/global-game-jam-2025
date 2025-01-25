@@ -15,7 +15,7 @@ function Main.new() : Main
     local instance: Main = {}
     setmetatable(instance, MainMetatable)
     instance.background = Background.new()
-    instance.player = Player.new()
+    instance.player = Player.newTest()
     return instance
 end
 
