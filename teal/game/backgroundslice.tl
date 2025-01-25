@@ -1,4 +1,5 @@
 require("shared.init")
+local CollideableSlice = require("game.collideable")
 
 local TILE_SIZE <const> = 16
 local SLICE_HEIGHT <const> = 16
@@ -6,7 +7,9 @@ global SLICE_HEIGHT_PX <const> = TILE_SIZE * SLICE_HEIGHT
 
 local record BackgroundSlice
     canvas: Canvas.SubCanvas
-    screenY: number
+    screenX: integer
+    screenY: integer
+    collision_slice: CollideableSlice
 end
 
 local BackgroundSliceMetatable: metatable<BackgroundSlice> = {
@@ -15,6 +18,7 @@ local BackgroundSliceMetatable: metatable<BackgroundSlice> = {
 
 function BackgroundSlice:draw()
     self.canvas.draw(0, math.floor(self.screenY))
+    self.collision_slice:draw(self.canvas, 0, self.screenY)
 end
 
 function BackgroundSlice.new(y: integer): BackgroundSlice
@@ -23,6 +27,7 @@ function BackgroundSlice.new(y: integer): BackgroundSlice
     }
     setmetatable(instance, BackgroundSliceMetatable)
     instance.canvas = Canvas.newCanvas(true)
+    instance.collision_slice = CollideableSlice.new()
     for i=1,SLICE_HEIGHT do
         local leftTile = math.random(0, 3)
         local rightTile = math.random(0, 3)

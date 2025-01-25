@@ -10,6 +10,7 @@ global config: Config = {
         "game/background.lua",
         "game/player.lua",
         "game/backgroundslice.lua",
+        "game/collideable.lua",
         "shared/subprotocol.lua",
         "shared/init.lua"
     },
@@ -17,6 +18,7 @@ global config: Config = {
     pageBackgroundColour = "powderblue",
     displayWidth = 270,
     displayHeight = 480,
+    spriteDimensions = 32,
     entryPoint = "game/main.lua"
 }
 print("Completed initialising...")
