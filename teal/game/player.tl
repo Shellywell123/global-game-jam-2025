@@ -89,7 +89,7 @@ end
 -- keyStates: input key pressed or not
 -- dt: miliseconds
 function Bubble:step(dt: number, keyStates: {string:boolean})
-
+    
     local cv: Vector2D = {x = 0, y = 0}
     if self.collision_vector then
         cv = self.collision_vector
@@ -237,8 +237,14 @@ function Player:pop(i: integer)
 end
 
 function Player:step(dt: number, keyStates: {string:boolean}, socketSend: function(string))
-    for i, bubble in ipairs(self.bubbles) do
-        bubble:step(dt, keyStates)
+    local i = 1
+    while (i <= #self.bubbles) do
+        if (self.bubbles[i].y >= config.displayHeight) then
+            table.remove(self.bubbles, i)
+        else
+            self.bubbles[i]:step(dt, keyStates)
+            i = i + 1
+        end
     end
 end
 
