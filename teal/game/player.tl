@@ -202,7 +202,7 @@ function Player:pop(i: integer)
     self.bubbles[i].x = self.bubbles[i].x - 5
     self.bubbles[i].y = self.bubbles[i].y + 10
 
-    self.bubbles[i].invulnerableTime = self.bubbles[i].invulnerableTime + INVULERNABLE_TIME
+    self.bubbles[i].invulnerableTime = self.bubbles[i].invulnerableTime + INVULNERABLE_TIME
 
     -- todo: slightly randomise the velocities
     local bubble_copy = Bubble.copy(self.bubbles[i])
