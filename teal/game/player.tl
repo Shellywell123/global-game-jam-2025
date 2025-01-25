@@ -33,6 +33,10 @@ local BubbleMetatable: metatable<Bubble> = {
     __index = Bubble,
  }
 
+function Bubble:radius(): number
+    return BUBBLE_DIAMETER[self.bubbleIndex] / 2
+end
+
 function Bubble.new(): Bubble
     local instance: Bubble = {}
     setmetatable(instance, BubbleMetatable)
@@ -58,6 +62,10 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     local prevX = self.x
     local prevY = self.y
 
+    if self.collision_vector then
+        return
+    end
+
     if (keyStates["w"] and not keyStates["s"]) then
         self.y = self.y - self.y_vel * dt
     end
@@ -70,14 +78,19 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     if (keyStates["d"] and not keyStates["a"]) then
         self.x = self.x + self.x_vel * dt
     end
+
     -- increment the internal ticker for animations
     self.ticker = math.fmod(self.ticker + (dt * self.ticker_speed), 360)
+
+    -- have to keep these seperate to avoid rounding errors
+    self.draw_x = math.floor(self.x + math.sin(self.ticker * DEGREES_TO_RADIANS) * OSCILLATE_AMPLITUDE)
+    self.draw_y = math.floor(self.y)
 end
 
 function Bubble:draw()
     -- have to keep these seperate to avoid rounding errors
-    self.draw_x = math.floor(self.x + math.sin(self.ticker * DEGREES_TO_RADIANS) * OSCILLATE_AMPLITUDE)
-    self.draw_y = math.floor(self.y)
+    self.draw_x = self.draw_x
+    self.draw_y = self.draw_y
 
     if (self.bubbleIndex ~= self.previousBubbleIndex) then
         local size = BUBBLE_DIAMETER[self.bubbleIndex]

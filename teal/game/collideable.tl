@@ -1,5 +1,7 @@
 require("shared.init")
 
+local DEGREES_TO_RADIANS <const> = 3.1415 / 180
+
 local record Collideable
     x: number
     y: number
@@ -12,18 +14,41 @@ local record Collideable
     -- by default will just use a box with the size and shape
     -- returns a 2D unit vector that points from the middle of the collideable
     -- to the object
-    collision_geometry: function(self: self, x: number, y: number) : {number}
+    -- assumes the object that is being considered is a circle
+    collision_geometry: function(self: self, x: number, y: number, squared_radius: number) : {number}
 end
 
-local function rectangular_geometry(self: Collideable, x: number, y: number) : {number}
-    local within_x = ((x >= self.x) and (x <= (self.x + self.size_x)))
-    local within_y = ((y >= self.y) and (y <= (self.y + self.size_y)))
-    if within_x and within_y then
-        return {
-            [0] = x - self.x + self.size_x / 2,
-            [1] = y - self.y + self.size_y / 2,
-        }
+local function squared_distance(x: number, y: number, other_x: number, other_y: number) : number
+end
+
+local function signum(x : number) : number
+   if x > 0 then
+      return 1
+   elseif x < 0 then
+      return -1
+   else
+      return 0
+   end
+end
+
+local function rectangular_geometry(self: Collideable, x: number, y: number, squared_radius: number) : {number}
+    -- calculate the closet point
+    local X = math.max(self.x, math.min(x, self.x + self.size_x))
+    local Y = math.max(self.y, math.min(y - 1, self.y + self.size_y))
+
+    local dx = X - x
+    local dy = Y - y
+
+    local d =  dx*dx + dy*dy
+
+    if d < squared_radius then
+        if math.abs(dx) > math.abs(dy) then
+            return {[0] = signum(dx), [1] = 0 }
+        else
+            return {[0] = 0, [1] = signum(dy) }
+        end
     end
+
     return nil
 end
 
@@ -49,8 +74,8 @@ function Collideable.new(): Collideable
     return instance
 end
 
-function Collideable:collide(x: number, y: number) : {number}
-    return self:collision_geometry(x, y)
+function Collideable:collide(x: number, y: number, squared_radius: number) : {number}
+    return self:collision_geometry(x, y, squared_radius)
 end
 
 function Collideable:draw(canvas: Canvas.SubCanvas, x: number, y: number)
@@ -86,9 +111,9 @@ end
 -- takes the objects position and then calculates if there is a collision,
 -- returning the unit vector direction from the collideable to the object, else
 -- nil
-function CollideableSlice:collide(x: number, y: number) : {number}
+function CollideableSlice:collide(x: number, y: number, squared_radius: number) : {number}
     for _, obj in ipairs(self.objects) do
-        local col = obj:collide(x, y)
+        local col = obj:collide(x, y, squared_radius)
         if col then
             return col
         end

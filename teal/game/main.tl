@@ -31,13 +31,17 @@ end
 
 function Game.step(dt: number)
     for _, bubble in ipairs(Game.player.bubbles) do
+        local radius = bubble:radius()
+        local squared_radius = radius * radius
         bubble.collision_vector = nil
         for _, bg_slice in ipairs(Game.background.slices) do
-            local v = bg_slice.collision_slice:collide(bubble.x, bubble.y)
+            local v = bg_slice.collision_slice:collide(bubble.draw_x + radius, bubble.draw_y + radius, squared_radius)
             if v then
-                print("Collision!", bubble.x, bubble.y)
+                bubble.collision_vector = v
+                break
             end
         end
+
     end
 
     Game.player:step(dt, Game.keyStates, Game.socketSend)
