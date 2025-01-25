@@ -15,11 +15,11 @@ function Main.new() : Main
     local instance: Main = {}
     setmetatable(instance, MainMetatable)
     instance.background = Background.new()
-    instance.player = Player.new()
+    instance.player = Player.newTest()
     return instance
 end
 
-function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function(string))
+function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState))
     local to_pop = {}
     for i, bubble in ipairs(self.player.bubbles) do
         local radius = bubble:radius()
