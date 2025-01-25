@@ -1,3 +1,5 @@
+require("shared.init")
+
 local record Background
     canvas: Canvas.SubCanvas
 end
@@ -11,14 +13,11 @@ function Background:draw()
 end
 
 function Background.new(): Background
+    local size = 64;
     local instance: Background = {}
     setmetatable(instance, BackgroundMetatable)
     instance.canvas = Canvas.newCanvas(false)
-    instance.canvas.drawImage("block.png", 0, 0, 64, 64, 0, 1728, 64, 64)
-    instance.canvas.drawImage("block.png", 0, 0, 64, 64, 0, 1792, 64, 64)
-    instance.canvas.drawImage("block.png", 0, 0, 64, 64, 0, 1856, 64, 64)
-    instance.canvas.drawImage("block.png", 0, 0, 64, 64, 64, 1856, 64, 64)
-    instance.canvas.drawImage("block.png", 0, 0, 64, 64, 1016, 1856, 64, 64)
+    instance.canvas.drawImage("block.png", 0, 0, size, size, size, config.displayHeight - size, size, size)
     return instance
 end
 

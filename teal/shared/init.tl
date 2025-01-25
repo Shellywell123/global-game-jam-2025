@@ -1,9 +1,9 @@
 print("Started initialising...")
 global config: Config = {
     imageFilenames = {
-        "guy.png",
         "left-arrow.png",
         "right-arrow.png",
+        "bubble.png",
         "block.png"
     },
     luaFilenames = {
@@ -11,12 +11,13 @@ global config: Config = {
         "game/background.lua",
         "game/buttons.lua",
         "game/character.lua",
-        "shared/subprotocol.lua"
+        "shared/subprotocol.lua",
+        "shared/init.lua"
     },
     blankColour = "black",
     pageBackgroundColour = "powderblue",
-    displayWidth = 1080,
-    displayHeight = 1920,
+    displayWidth = 270,
+    displayHeight = 480,
     entryPoint = "game/main.lua"
 }
 print("Completed initialising...")

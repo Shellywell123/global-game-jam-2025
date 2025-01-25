@@ -13,11 +13,11 @@ local CharacterMetatable: metatable<Character> = {
 
 function Character.new(): Character
     local instance: Character = {}
-    setmetatable(instance, CharacterMetatable)    
+    setmetatable(instance, CharacterMetatable)
     instance.speed = 0.5
     instance.spriteIndex = 0
-    instance.x = 300
-    instance.y = 400
+    instance.x = 30
+    instance.y = 40
     instance.canvas = Canvas.newCanvas(true)
     return instance
 end
@@ -39,15 +39,14 @@ function Character:step(dt: number, keyStates: {string:boolean}, socketSend: fun
         self.spriteIndex = 1
         self.x = self.x + self.speed * dt
     end
-    if (self.x ~= prevX or self.y ~= prevY) then
-        socketSend("Position updated: x="..tostring(self.x)..", y="..tostring(self.y))
-    end
+    self.x = math.floor(self.x)
+    self.y = math.floor(self.y)
 end
 
 function Character:draw()
     if (self.spriteIndex ~= self.prevSpriteIndex) then
         self.canvas.clearCanvas()
-        self.canvas.drawImage("guy.png", self.spriteIndex * 64, 0, 64, 64, 0, 0, 64, 64)
+        self.canvas.drawImage("bubble.png", 0, 0, 64, 64, 0, 0, 64, 64)
         self.prevSpriteIndex = self.spriteIndex
     end
     self.canvas.draw(self.x, self.y)
