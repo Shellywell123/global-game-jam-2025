@@ -26,11 +26,16 @@ local record Bubble
     -- must be integral: the pixels into which to draw the bubble
     draw_x: integer
     draw_y: integer
+    collision_vector: {number}
 end
 
 local BubbleMetatable: metatable<Bubble> = {
     __index = Bubble,
  }
+
+function Bubble:radius(): number
+    return BUBBLE_DIAMETER[self.bubbleIndex] / 2
+end
 
 function Bubble.new(): Bubble
     local instance: Bubble = {}
@@ -46,6 +51,7 @@ function Bubble.new(): Bubble
     instance.ticker = 0
     instance.draw_x = 0
     instance.draw_y = 0
+    instance.collision_vector = nil
     return instance
 
 end
@@ -54,14 +60,23 @@ end
 -- dt: miliseconds
 function Bubble:step(dt: number, keyStates: {string:boolean})
 
+    local cv: {number} = {[0] = 0, [1] = 0}
+    if self.collision_vector then
+        cv = self.collision_vector
+    end
+    
     local left = false
     local right = false
 
     if (keyStates["a"] or keyStates["ArrowLeft"] or keyStates["touchLeft"]) then
-        left = true
+        if cv[0] == 0 then
+            left = true
+        end
     end
     if (keyStates["d"] or keyStates["ArrowRight"] or keyStates["touchRight"]) then
-        right = true
+        if cv[0] == 0 then
+            right = true
+        end
     end
 
     if (left and not right) then
@@ -69,6 +84,16 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     end
     if (right and not left) then
         self.x = self.x + self.x_vel * dt
+    end
+    if (keyStates["w"] and not keyStates["s"]) then
+        if cv[1] == 0 then
+            self.y = self.y - self.y_vel * dt
+        end
+    end
+    if (keyStates["s"] and not keyStates["w"]) then
+        if cv[1] == 0 then
+            self.y = self.y + self.y_vel * dt
+        end
     end
 
     -- increment the internal ticker for animations
@@ -80,6 +105,10 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
 end
 
 function Bubble:draw()
+    -- have to keep these seperate to avoid rounding errors
+    self.draw_x = self.draw_x
+    self.draw_y = self.draw_y
+
     if (self.bubbleIndex ~= self.previousBubbleIndex) then
         local size = BUBBLE_DIAMETER[self.bubbleIndex]
         self.canvas.clearCanvas()

@@ -4,6 +4,7 @@ global type Config = record
     blankColour: string
     displayWidth: integer
     displayHeight: integer
+    spriteDimensions: integer
     pageBackgroundColour: string
     entryPoint: string
 end
@@ -15,7 +16,7 @@ global record Canvas
         clearCanvas: function()
     end
 
-    newCanvas: function(transparent: boolean): SubCanvas
+    newCanvas: function(transparent: boolean, height?: integer): SubCanvas
 end
 
 global record Socket

@@ -5,7 +5,9 @@ global config: Config = {
         "right-arrow.png",
         "bubble.png",
         "pipe.png",
-        "bubble.png"
+        "dirt.png",
+        "bubble.png",
+        "items.png"
     },
     luaFilenames = {
         "game/main.lua",
@@ -13,6 +15,7 @@ global config: Config = {
         "game/buttons.lua",
         "game/player.lua",
         "game/backgroundslice.lua",
+        "game/collideable.lua",
         "shared/subprotocol.lua",
         "shared/init.lua"
     },
@@ -20,6 +23,7 @@ global config: Config = {
     pageBackgroundColour = "powderblue",
     displayWidth = 270,
     displayHeight = 480,
+    spriteDimensions = 32,
     entryPoint = "game/main.lua"
 }
 print("Completed initialising...")
