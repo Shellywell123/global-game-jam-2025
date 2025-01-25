@@ -92,7 +92,7 @@ end
 -- keyStates: input key pressed or not
 -- dt: miliseconds
 function Bubble:step(dt: number, keyStates: {string:boolean})
-    
+
     local cv: Vector2D = {x = 0, y = 0}
     if self.collision_vector then
         cv = self.collision_vector
@@ -137,6 +137,11 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
         end
     end
 
+    -- if we are not colliding, there is a small restoration speed that gets added
+    if (cv.y == 0) and self.y + self:radius() > BUBBLE_TARGET_Y then
+        self.y = self.y - BUBBLE_RESTORATION_SPEED * dt
+    end
+
     -- increment the internal ticker for animations
     self.ticker = math.fmod(self.ticker + (dt * self.ticker_speed), 360)
 
@@ -175,7 +180,11 @@ function Bubble:draw()
         self.canvas.drawImage("bubble.png", self.bubbleIndex * SPRITE_STRIDE, 0, size, size, 0, 0, size, size)
         self.previousBubbleIndex = self.bubbleIndex
     end
-    self.canvas.draw(self.draw_x, self.draw_y)
+
+    -- blink the bubbles
+    if (self.invulnerableTime <= 0) or (math.fmod(self.invulnerableTime, 100) < 50) then
+        self.canvas.draw(self.draw_x, self.draw_y)
+    end
 end
 
 -- An object that represents everything that a player controls, along with it's
