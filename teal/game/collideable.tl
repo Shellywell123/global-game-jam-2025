@@ -1,4 +1,5 @@
 require("shared.init")
+local type Vector2D = require("game.vector2d")
 
 local DEGREES_TO_RADIANS <const> = 3.1415 / 180
 
@@ -16,7 +17,7 @@ local record Collideable
     -- returns a 2D unit vector that points from the middle of the collideable
     -- to the object
     -- assumes the object that is being considered is a circle
-    collision_geometry: function(self: self, x: number, y: number, squared_radius: number) : {number}
+    collision_geometry: function(self: self, x: number, y: number, squared_radius: number) : Vector2D
 end
 
 local function squared_distance(x: number, y: number, other_x: number, other_y: number) : number
@@ -32,7 +33,7 @@ local function signum(x : number) : number
    end
 end
 
-local function rectangular_geometry(self: Collideable, x: number, y: number, squared_radius: number) : {number}
+local function rectangular_geometry(self: Collideable, x: number, y: number, squared_radius: number) : Vector2D
     -- calculate the closet point
     local X = math.max(self.x, math.min(x, self.x + self.size_x))
     local Y = math.max(self.offset_y + self.y, math.min(y - 1, self.offset_y + self.y + self.size_y))
@@ -44,9 +45,9 @@ local function rectangular_geometry(self: Collideable, x: number, y: number, squ
 
     if d < squared_radius then
         if math.abs(dx) > math.abs(dy) then
-            return {[0] = signum(dx), [1] = 0 }
+            return {x = signum(dx), y = 0 }
         else
-            return {[0] = 0, [1] = signum(dy) }
+            return {x = 0, y = signum(dy) }
         end
     end
 
@@ -76,7 +77,7 @@ function Collideable.new(): Collideable
     return instance
 end
 
-function Collideable:collide(x: number, y: number, squared_radius: number) : {number}
+function Collideable:collide(x: number, y: number, squared_radius: number) : Vector2D
     return self:collision_geometry(x, y, squared_radius)
 end
 
@@ -113,7 +114,7 @@ end
 -- takes the objects position and then calculates if there is a collision,
 -- returning the unit vector direction from the collideable to the object, else
 -- nil
-function CollideableSlice:collide(offset_y: number, x: number, y: number, squared_radius: number) : {number}
+function CollideableSlice:collide(offset_y: number, x: number, y: number, squared_radius: number) : Vector2D
     for _, obj in ipairs(self.objects) do
         obj.offset_y = offset_y
         local col = obj:collide(x, y, squared_radius)
