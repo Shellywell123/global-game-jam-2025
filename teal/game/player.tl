@@ -180,7 +180,11 @@ function Bubble:draw()
         self.canvas.drawImage("bubble.png", self.bubbleIndex * SPRITE_STRIDE, 0, size, size, 0, 0, size, size)
         self.previousBubbleIndex = self.bubbleIndex
     end
-    self.canvas.draw(self.draw_x, self.draw_y)
+
+    -- blink the bubbles
+    if (self.invulnerableTime <= 0) or (math.fmod(self.invulnerableTime, 100) < 50) then
+        self.canvas.draw(self.draw_x, self.draw_y)
+    end
 end
 
 -- An object that represents everything that a player controls, along with it's
