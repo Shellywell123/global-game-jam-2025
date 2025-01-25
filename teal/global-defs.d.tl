@@ -4,6 +4,7 @@ global type Config = record
     blankColour: string
     displayWidth: integer
     displayHeight: integer
+    spriteDimensions: integer
     pageBackgroundColour: string
     entryPoint: string
 end
