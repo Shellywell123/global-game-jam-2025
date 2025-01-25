@@ -8,7 +8,7 @@ global SLICE_HEIGHT_PX <const> = TILE_SIZE * SLICE_HEIGHT
 local record BackgroundSlice
     canvas: Canvas.SubCanvas
     screenX: integer
-    screenY: integer
+    screenY: number
     collision_slice: CollideableSlice
 end
 
