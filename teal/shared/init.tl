@@ -2,7 +2,8 @@ print("Started initialising...")
 global config: Config = {
     imageFilenames = {
         "pipe.png",
-        "bubble.png"
+        "bubble.png",
+        "dirt.png"
     },
     luaFilenames = {
         "game/main.lua",
