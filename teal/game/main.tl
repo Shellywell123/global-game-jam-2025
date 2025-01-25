@@ -3,6 +3,7 @@ local Buttons = require("game.buttons")
 local type GameState = require("game.gamestate")
 local StartState = require("game.states.start")
 local LoadingState = require("game.states.loading")
+local protocols = require("shared.protocols")
 
 global record Game
     currentState: GameState
@@ -85,8 +86,8 @@ function Game.onButtonRelease()
 end
 
 function Game.websocketOpened()
-    Socket.send("Hello World!")
     Game.socketOpen = true
+    Socket.send(protocols.registerClient)
 end
 
 function Game.websocketClosed(code: integer, reason: string)

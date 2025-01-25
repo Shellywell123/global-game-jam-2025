@@ -1,4 +1,5 @@
 local type GameState = require("game.gamestate")
+local protocols = require("shared.protocols")
 
 local record LoadingState is GameState
 end
@@ -17,6 +18,11 @@ function LoadingState:pointerDown() end
 
 function LoadingState:pointerUp() end
 
-function LoadingState:websocketMessage(message: string) end
+function LoadingState:websocketMessage(message: string)
+    local match = string.match(message, protocols.registrationSuccess.." (%d+)")
+    if (match) then
+        print(match)  
+    end
+end
 
 return LoadingState 
