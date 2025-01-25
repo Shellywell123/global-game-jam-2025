@@ -239,12 +239,22 @@ async function execute() {
             });
         }
 
-        if (game["onClick"] != undefined) {
-            canvasElement.addEventListener('click', (event) => {
+        if (game["pointerDown"] != undefined) {
+            document.addEventListener('pointerdown', (event) => {
                 let x,y;
                 [x,y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
-                    game.onClick(x, y);
+                    game.onButton(x, y);
+                }
+            });
+        }
+
+        if (game["pointerUp"] != undefined) {
+            document.addEventListener('pointerup', (event) => {
+                let x,y;
+                [x,y] = transformPointToCanvas(event.pageX, event.pageY);
+                if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
+                    game.onButtonRelease();
                 }
             });
         }

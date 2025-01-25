@@ -59,14 +59,32 @@ end
 -- keyStates: input key pressed or not
 -- dt: miliseconds
 function Bubble:step(dt: number, keyStates: {string:boolean})
-    local prevX = self.x
-    local prevY = self.y
 
     local cv: {number} = {[0] = 0, [1] = 0}
     if self.collision_vector then
         cv = self.collision_vector
     end
+    
+    local left = false
+    local right = false
 
+    if (keyStates["a"] or keyStates["ArrowLeft"] or keyStates["touchLeft"]) then
+        if cv[0] == 0 then
+            left = true
+        end
+    end
+    if (keyStates["d"] or keyStates["ArrowRight"] or keyStates["touchRight"]) then
+        if cv[0] == 0 then
+            right = true
+        end
+    end
+
+    if (left and not right) then
+        self.x = self.x - self.x_vel * dt
+    end
+    if (right and not left) then
+        self.x = self.x + self.x_vel * dt
+    end
     if (keyStates["w"] and not keyStates["s"]) then
         if cv[1] == 0 then
             self.y = self.y - self.y_vel * dt
@@ -75,16 +93,6 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     if (keyStates["s"] and not keyStates["w"]) then
         if cv[1] == 0 then
             self.y = self.y + self.y_vel * dt
-        end
-    end
-    if (keyStates["a"] and not keyStates["d"]) then
-        if cv[0] == 0 then
-            self.x = self.x - self.x_vel * dt
-        end
-    end
-    if (keyStates["d"] and not keyStates["a"]) then
-        if cv[0] == 0 then
-            self.x = self.x + self.x_vel * dt
         end
     end
 
