@@ -62,21 +62,30 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     local prevX = self.x
     local prevY = self.y
 
+    local cv: {number} = {[0] = 0, [1] = 0}
     if self.collision_vector then
-        return
+        cv = self.collision_vector
     end
 
     if (keyStates["w"] and not keyStates["s"]) then
-        self.y = self.y - self.y_vel * dt
+        if cv[1] == 0 then
+            self.y = self.y - self.y_vel * dt
+        end
     end
     if (keyStates["s"] and not keyStates["w"]) then
-        self.y = self.y + self.y_vel * dt
+        if cv[1] == 0 then
+            self.y = self.y + self.y_vel * dt
+        end
     end
     if (keyStates["a"] and not keyStates["d"]) then
-        self.x = self.x - self.x_vel * dt
+        if cv[0] == 0 then
+            self.x = self.x - self.x_vel * dt
+        end
     end
     if (keyStates["d"] and not keyStates["a"]) then
-        self.x = self.x + self.x_vel * dt
+        if cv[0] == 0 then
+            self.x = self.x + self.x_vel * dt
+        end
     end
 
     -- increment the internal ticker for animations
