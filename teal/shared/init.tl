@@ -5,6 +5,11 @@ global config: Config = {
         "pipe.png",
         "dirt.png",
         "bubble.png",
+        "dirt.png",
+        "duck.png",
+        "ring.png",
+        "sock.png",
+        "apple.png",
         "items.png"
     },
     luaFilenames = {
