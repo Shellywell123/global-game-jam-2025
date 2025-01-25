@@ -4,9 +4,6 @@ local record Buttons
     canvas: Canvas.SubCanvas
 end
 
--- uncomment if you want to see the arrow buttons
--- local size <const> = 64;
-
 local ButtonsMetatable: metatable<Buttons> = {
     __index = Buttons
 }
@@ -19,9 +16,6 @@ function Buttons.new(): Buttons
     local instance: Buttons = {}
     setmetatable(instance, ButtonsMetatable)
     instance.canvas = Canvas.newCanvas(true)
-    -- uncomment if you want to see the arrow buttons
-    -- instance.canvas.drawImage("left-arrow.png", 0, 0, 512, 512, 0, config.displayHeight - size, size, size)
-    -- instance.canvas.drawImage("right-arrow.png", 0, 0, 512, 512, config.displayWidth - size, config.displayHeight - size, size, size)
     return instance
 end
 

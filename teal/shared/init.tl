@@ -1,8 +1,6 @@
 print("Started initialising...")
 global config: Config = {
     imageFilenames = {
-        "left-arrow.png",
-        "right-arrow.png",
         "bubble.png",
         "pipe.png",
         "dirt.png",

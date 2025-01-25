@@ -241,7 +241,6 @@ async function execute() {
 
         if (game["pointerDown"] != undefined) {
             document.addEventListener('pointerdown', (event) => {
-                console.log("pointerdown")
                 let x,y;
                 [x,y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
@@ -252,7 +251,6 @@ async function execute() {
 
         if (game["pointerUp"] != undefined) {
             document.addEventListener('pointerup', (event) => {
-                console.log("pointerup")
                 let x,y;
                 [x,y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
