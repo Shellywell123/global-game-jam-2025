@@ -27,6 +27,7 @@ function StartBackground.new(): StartBackground
             instance.canvas.drawImage("dirt.png", tileIndex*TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE)
         end
     end
+    instance.canvas.drawImage("arrow.png", 0, 0, 64, 64, ((config.displayWidth // 2) - 32), 16, 64, 64)
     return instance
 end
 

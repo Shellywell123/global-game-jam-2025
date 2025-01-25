@@ -10,7 +10,8 @@ global config: Config = {
         "ring.png",
         "sock.png",
         "apple.png",
-        "items.png"
+        "items.png",
+        "arrow.png"
     },
     luaFilenames = {
         "game/main.lua",
