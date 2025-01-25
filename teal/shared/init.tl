@@ -21,7 +21,8 @@ global config: Config = {
         "game/collideable.lua",
         "shared/subprotocol.lua",
         "shared/init.lua",
-        "game/const.lua"
+        "game/const.lua",
+        "game/states/main.lua"
     },
     blankColour = "black",
     pageBackgroundColour = "powderblue",
