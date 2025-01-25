@@ -25,8 +25,14 @@ npm i
 npm start
 ```
 
+### or docker
+```
+docker compose up
+```
+
 ### Commands
 - `npm run copy` will copy all necessary assets from `src/assets` to `dist/assets`.
 - `npm run build` will rebuild all javascript and teal, and copy everything over to `dist`.
 - `npm run run` will run the server without rebuilding or copying anything.
 - `npm start` builds and copies everything, and then runs the server.
+

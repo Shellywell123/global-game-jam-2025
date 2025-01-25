@@ -1,0 +1,7 @@
+services:
+  bubble:
+    container_name: bubble
+    build:
+      context: .
+    ports:
+      - 8080:8080
