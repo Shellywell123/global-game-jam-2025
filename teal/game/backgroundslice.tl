@@ -1,6 +1,7 @@
 require("shared.init")
 
 local TILE_SIZE <const> = 16
+local SLICE_HEIGHT <const> = 16
 
 local record BackgroundSlice
     canvas: Canvas.SubCanvas
@@ -20,8 +21,10 @@ function BackgroundSlice.new(): BackgroundSlice
     local instance: BackgroundSlice = {}
     setmetatable(instance, BackgroundSliceMetatable)
     instance.canvas = Canvas.newCanvas(true)
-    -- TODO: generate multiple pipes
-    instance.canvas.drawImage("pipe.png", 0, 0, 16, 16, 0, 0, 16, 16)
+    for i=1,SLICE_HEIGHT do
+    	instance.canvas.drawImage("pipe.png", 0, 0, TILE_SIZE, TILE_SIZE, 0, (i-1)*TILE_SIZE, TILE_SIZE, TILE_SIZE)
+    	instance.canvas.drawImage("pipe.png", 0, 0, TILE_SIZE, TILE_SIZE, config.displayWidth-TILE_SIZE, (i-1)*TILE_SIZE, TILE_SIZE, TILE_SIZE)
+    end
     return instance
 end
 
