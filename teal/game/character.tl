@@ -46,7 +46,7 @@ end
 function Character:draw()
     if (self.spriteIndex ~= self.prevSpriteIndex) then
         self.canvas.clearCanvas()
-        self.canvas.drawImage("bubble.png", self.spriteIndex * 64, 0, 64, 64, 0, 0, 64, 64)
+        self.canvas.drawImage("bubble.png", 0, 0, 64, 64, 0, 0, 64, 64)
         self.prevSpriteIndex = self.spriteIndex
     end
     self.canvas.draw(self.x, self.y)
