@@ -1,9 +1,10 @@
 require("shared.init")
 local BackgroundSlice = require("game.backgroundslice")
 
-local GAME_HEIGHT <const> = 25600
+local GAME_HEIGHT <const> = 1024
 local TILE_SIZE <const> = 32
-local SPEED = 0.03
+local SPEED <const> = 0.03
+local PIPE_SPEED_RATIO <const> = 2
 
 local record Background
     canvas: Canvas.SubCanvas
@@ -17,6 +18,9 @@ local BackgroundMetatable: metatable<Background> = {
 
 function Background:step(dt: number)
     self.y = self.y + SPEED*dt
+    for _,slice in ipairs(self.slices) do
+        slice.screenY = slice.screenY + SPEED*PIPE_SPEED_RATIO*dt
+    end
 end
 
 function Background:draw()
@@ -32,7 +36,10 @@ function Background.new(): Background
         y = config.displayHeight - GAME_HEIGHT
     }
     setmetatable(instance, BackgroundMetatable)
-    instance.slices = {BackgroundSlice.new()}
+    instance.slices = {}
+    for y=0,((PIPE_SPEED_RATIO*GAME_HEIGHT)//SLICE_HEIGHT_PX) do
+        table.insert(instance.slices, BackgroundSlice.new((config.displayHeight-GAME_HEIGHT) - SLICE_HEIGHT_PX//2 + (y*SLICE_HEIGHT_PX)))
+    end
     instance.canvas = Canvas.newCanvas(false, GAME_HEIGHT)
     for x=0,(config.displayWidth//TILE_SIZE) do
         for y=0,(GAME_HEIGHT//TILE_SIZE) do

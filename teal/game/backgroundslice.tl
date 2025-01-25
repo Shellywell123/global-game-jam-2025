@@ -2,11 +2,11 @@ require("shared.init")
 
 local TILE_SIZE <const> = 16
 local SLICE_HEIGHT <const> = 16
+global SLICE_HEIGHT_PX <const> = TILE_SIZE * SLICE_HEIGHT
 
 local record BackgroundSlice
     canvas: Canvas.SubCanvas
-    screenX: integer
-    screenY: integer
+    screenY: number
 end
 
 local BackgroundSliceMetatable: metatable<BackgroundSlice> = {
@@ -14,11 +14,13 @@ local BackgroundSliceMetatable: metatable<BackgroundSlice> = {
 }
 
 function BackgroundSlice:draw()
-    self.canvas.draw(0, 0)
+    self.canvas.draw(0, math.floor(self.screenY))
 end
 
-function BackgroundSlice.new(): BackgroundSlice
-    local instance: BackgroundSlice = {}
+function BackgroundSlice.new(y: integer): BackgroundSlice
+    local instance: BackgroundSlice = {
+        screenY = y
+    }
     setmetatable(instance, BackgroundSliceMetatable)
     instance.canvas = Canvas.newCanvas(true)
     for i=1,SLICE_HEIGHT do
