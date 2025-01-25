@@ -121,9 +121,7 @@ const CanvasCalls = {
 
 	let parentCanvas = canvas;
 	let drawCanvas = newCanvas;
-	let overlayCanvas = null;
 	let drawCanvasElement = null;
-	let overlayCanvasElement = null;
 
         if (tint != undefined) {
 	    parentCanvas = newCanvas
@@ -131,12 +129,6 @@ const CanvasCalls = {
 	    drawCanvasElement.width = newCanvasElement.width;
 	    drawCanvasElement.height = newCanvasElement.height;
 	    drawCanvas = drawCanvasElement.getContext("2d");
-	    overlayCanvasElement = document.createElement("canvas");
-	    overlayCanvasElement.width = newCanvasElement.width;
-	    overlayCanvasElement.height = newCanvasElement.height;
-	    overlayCanvas = overlayCanvasElement.getContext("2d");
-            overlayCanvas.fillStyle = tint;
-            overlayCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
 	}
 
         const subCanvas = {

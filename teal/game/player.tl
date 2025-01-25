@@ -30,6 +30,7 @@ local record Bubble
     draw_x: integer
     draw_y: integer
     collision_vector: Vector2D
+    tint: string
 end
 
 local BubbleMetatable: metatable<Bubble> = {
