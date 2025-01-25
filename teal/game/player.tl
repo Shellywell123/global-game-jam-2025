@@ -4,8 +4,6 @@ require("game.const")
 local DEGREES_TO_RADIANS <const> = 3.1415 / 180
 local OSCILLATE_AMPLITUDE <const> = 2
 local SPRITE_STRIDE <const> = 32
--- todo: constants
-local BACKGROUND_SPEED <const> = 0.03
 local BUBBLE_DIAMETER <const> = {
     -- maps from bubble "level" to the diameter in pixels
     [0] = 8,
