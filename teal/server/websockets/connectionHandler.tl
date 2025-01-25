@@ -23,9 +23,8 @@ function ConnectionHandler:handleNext(pegasus: Pegasus, handler: Handler, regist
         if receivers then
             for _, receiver in ipairs(receivers) do
                 if (receiver == register.server) then
-                    print("New connection available")
                     local client, errmsg = register.server:accept()
-    
+
                     if client then
                         client:settimeout(pegasus.timeout, 'b')
                         handler:processRequest(pegasus.port, client, register.server)
@@ -38,7 +37,7 @@ function ConnectionHandler:handleNext(pegasus: Pegasus, handler: Handler, regist
                         client:setoption("keepalive", true)
                         self:onNewWebsocket(client, register)
                     else
-                        print("Connection "..register.nextIndex.." completed and closed")
+                        -- print("Connection "..register.nextIndex.." completed and closed")
                     end
                 else
                     local client = receiver as socket.Client
@@ -48,7 +47,6 @@ function ConnectionHandler:handleNext(pegasus: Pegasus, handler: Handler, regist
                         return frame
                     end)
                     if (status) then
-                        print("New frame received from connection "..index)
                         pcall(function() frameHandler:handleFrame(client, result, register) end)
                     else
                         local containedError = result as ContainedError
@@ -77,7 +75,6 @@ function ConnectionHandler:handleNext(pegasus: Pegasus, handler: Handler, regist
                 -- Send non-immediate responses, e.g broadcasts
                 if (index ~= nil) then
                     for _, frame in ipairs(register.messageQueue[client]) do
-                       print("Sending frame to client " .. tostring(index))
                        client:send(frame)
                     end
                     register.messageQueue[client] = {}
@@ -85,7 +82,7 @@ function ConnectionHandler:handleNext(pegasus: Pegasus, handler: Handler, regist
             end
         end
     end
-    
+
 end
 
 function ConnectionHandler:new(instance: ConnectionHandler): ConnectionHandler

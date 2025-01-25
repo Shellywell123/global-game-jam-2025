@@ -13,12 +13,12 @@ local FrameHandlerMetatable: metatable<FrameHandler> = {
 }
 
 function FrameHandler:handleUnfinishedContinuationFrame(client: socket.Client, frame: Frame, _: ServerClientRegister)
-    print("CONTINUATION FRAME.")
+    -- print("CONTINUATION FRAME.")
     self.unfinishedFrameLookup[client].payloadBytes = self.unfinishedFrameLookup[client].payloadBytes .. frame.payloadBytes
 end
 
 function FrameHandler:handleFinalContinuationFrame(client: socket.Client, frame: Frame, register: ServerClientRegister)
-    print("FINAL CONTINUATION FRAME.")
+    -- print("FINAL CONTINUATION FRAME.")
     local finishedFrame = self.unfinishedFrameLookup[client]
     self.unfinishedFrameLookup[client] = nil
     finishedFrame.payloadBytes = finishedFrame.payloadBytes .. frame.payloadBytes
@@ -31,7 +31,7 @@ function FrameHandler:onTextFrameParsed(_: socket.Client, frame: Frame, _: Serve
 end
 
 function FrameHandler:handleUnfinishedTextFrame(client: socket.Client, frame: Frame, _: ServerClientRegister)
-    print("UNFINISHED TEXT FRAME.")
+    -- print("UNFINISHED TEXT FRAME.")
     self.unfinishedFrameLookup[client] = frame
 end
 
@@ -49,7 +49,7 @@ function FrameHandler:onBinaryFrameParsed(_: socket.Client, frame: Frame, _: Ser
 end
 
 function FrameHandler:handleUnfinishedBinaryFrame(client: socket.Client, frame: Frame, _: ServerClientRegister)
-    print("UNFINISHED BINARY FRAME.")
+    -- print("UNFINISHED BINARY FRAME.")
     self.unfinishedFrameLookup[client] = frame
 end
 
@@ -59,7 +59,7 @@ function FrameHandler:handleFinalBinaryFrame(client: socket.Client, frame: Frame
 end
 
 function FrameHandler:handleCloseFrame(client: socket.Client, _: Frame, register: ServerClientRegister)
-    print("CLOSE FRAME.")
+    -- print("CLOSE FRAME.")
     local index = register.indexMap[client]
     print("Closing connection "..index)
     register:removeClient(client)
@@ -67,7 +67,7 @@ function FrameHandler:handleCloseFrame(client: socket.Client, _: Frame, register
 end
 
 function FrameHandler:handlePingFrame(client: socket.Client, frame: Frame, register: ServerClientRegister)
-    print("PING FRAME.")
+    -- print("PING FRAME.")
     frame:parseContentAsString()
     local pongFrame = Frame:newPongFrame(frame.stringContent)
     register:registerMessageToSendImmediately(client, pongFrame)
@@ -75,7 +75,7 @@ end
 
 function FrameHandler:handlePongFrame(_: socket.Client, _: Frame, _: ServerClientRegister)
     -- TODO
-    print("PONG FRAME.")
+    -- print("PONG FRAME.")
 end
 
 function FrameHandler:handleUnknownFrameType(_: socket.Client, frame: Frame, _: ServerClientRegister)

@@ -38,7 +38,6 @@ local pegasus = Pegasus:new({
 -- A FrameHandler which broadcasts any updates to position
 local frameHandler = FrameHandler:new({
     onTextFrameParsed = function(_: FrameHandler, _: socket.Client, frame: Frame, register: ServerClientRegister)
-        print("TEXT FRAME. CONTENT:\n"..frame.stringContent)
         if (string.find(frame.stringContent, "Position updated: x=%d+%.?%d*, y=%d+%.?%d*")) then
             local broadcast = Frame:newTextFrame(frame.stringContent)
             register:registerBroadcastToSend(broadcast)
@@ -62,9 +61,9 @@ pegasus.start = function(self: Pegasus)
     -- Makes sure that any successful websocket handshake stores the client in the register
     websocketHandshakePlugin:setRegister(register)
     local ip, port = server:getsockname()
-  
+
     print('Pegasus is up on ' .. ip .. ":".. port)
-  
+
     while 1 do
         connectionHandler:handleNext(self, handler, register, frameHandler)
     end
