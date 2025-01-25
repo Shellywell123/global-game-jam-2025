@@ -46,7 +46,7 @@ function Bubble.new(): Bubble
     instance.previousBubbleIndex = -1
     instance.bubbleIndex = 0
     instance.x = 30
-    instance.y = config.displayHeight - 16
+    instance.y = config.displayHeight - 64
     instance.x_vel = 0.2
     instance.y_vel = 0.2
     instance.ticker_speed = 1.1
