@@ -44,8 +44,6 @@ local function line_circle_at_origin_determinant(x1: number, x2: number, y1: num
         return nil
     end
 
-    print(discriminant)
-
     local X = (determinant * dy + signum(dy) * dx * math.sqrt(discriminant)) / dr2
     local Y = (-determinant * dx + math.abs(dy) * math.sqrt(discriminant)) / dr2
 
