@@ -39,9 +39,8 @@ function Character:step(dt: number, keyStates: {string:boolean}, socketSend: fun
         self.spriteIndex = 1
         self.x = self.x + self.speed * dt
     end
-    if (self.x ~= prevX or self.y ~= prevY) then
-        socketSend("Position updated: x="..tostring(self.x)..", y="..tostring(self.y))
-    end
+    self.x = math.floor(self.x)
+    self.y = math.floor(self.y)
 end
 
 function Character:draw()
