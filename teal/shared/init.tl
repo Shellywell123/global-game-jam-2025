@@ -12,8 +12,8 @@ global config: Config = {
     },
     blankColour = "black",
     pageBackgroundColour = "powderblue",
-    displayWidth = 1920,
-    displayHeight = 1080,
+    displayWidth = 1080,
+    displayHeight = 1920,
     entryPoint = "game/main.lua"
 }
 print("Completed initialising...")
