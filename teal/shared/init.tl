@@ -7,7 +7,7 @@ global config: Config = {
     luaFilenames = {
         "game/main.lua",
         "game/background.lua",
-        "game/character.lua",
+        "game/player.lua",
         "shared/subprotocol.lua",
         "shared/init.lua"
     },
