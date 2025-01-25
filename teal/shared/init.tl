@@ -4,13 +4,15 @@ global config: Config = {
         "left-arrow.png",
         "right-arrow.png",
         "bubble.png",
-        "block.png"
+        "pipe.png",
+        "bubble.png"
     },
     luaFilenames = {
         "game/main.lua",
         "game/background.lua",
         "game/buttons.lua",
-        "game/character.lua",
+        "game/player.lua",
+        "game/backgroundslice.lua",
         "shared/subprotocol.lua",
         "shared/init.lua"
     },

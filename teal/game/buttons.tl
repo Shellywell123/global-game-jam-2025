@@ -4,7 +4,8 @@ local record Buttons
     canvas: Canvas.SubCanvas
 end
 
-local size <const> = 64;
+-- uncomment if you want to see the arrow buttons
+-- local size <const> = 64;
 
 local ButtonsMetatable: metatable<Buttons> = {
     __index = Buttons

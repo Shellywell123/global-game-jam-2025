@@ -1,13 +1,13 @@
 local subprotocol = require("shared.subprotocol")
 local Background = require("game.background")
-local Character = require("game.character")
 local Buttons = require("game.buttons")
+local Player = require("game.player")
 
 global record Game
     keyStates: {string:boolean}
     background: Background
-    character: Character
     buttons: Buttons
+    player: Player
     socketOpen: boolean
     step: function(dt: number)
     draw: function()
@@ -24,8 +24,8 @@ Game.socketOpen = false
 function Game.init()
     Socket.open(subprotocol)
     Game.background = Background.new()
-    Game.character = Character.new()
     Game.buttons = Buttons.new()
+    Game.player = Player.new()
 end
 
 function Game.socketSend(message: string)
@@ -35,13 +35,13 @@ function Game.socketSend(message: string)
 end
 
 function Game.step(dt: number)
-    Game.character:step(dt, Game.keyStates, Game.socketSend)
+    Game.player:step(dt, Game.keyStates, Game.socketSend)
 end
 
 function Game.draw()
     Game.background:draw()
-    Game.character:draw()
     Game.buttons:draw()
+    Game.player:draw()
 end
 
 function Game.keyUp(key: string)
@@ -63,22 +63,18 @@ function Game.pointerDown()
     print("pressed")
 end
 
--- i know the function it empty, its needed, trust me bro
 function Game.pointerUp()
+    -- noop: i know the function is empty, its needed, trust me bro
 end
 
 function Game.onButton(x: number, y: number)
     print("onTouchStart: x="..x..", y="..y)
     local move = Game.buttons:onClicked(x, y)
-    if (move == 0) then
-        return
-    elseif (move == -1) then
+    if (move == -1) then
         Game.keyPress("touchLeft")
     elseif (move == 1) then
         Game.keyPress("touchRight")
     end
-
-    Socket.send("Position updated: x="..tostring(Game.character.x)..", y="..tostring(Game.character.y))
 end
 
 function Game.onButtonRelease()
@@ -103,6 +99,7 @@ function Game.websocketMessage(message: string)
     local _, _, x, y = string.find(message, "Position updated: x=(%d+%.?%d*), y=(%d+%.?%d*)")
     if (x and y) then
         print("From Lua: "..message)
-        Game.character:updatePosition(tonumber(x), tonumber(y))
+        Game.player:updatePosition(tonumber(x), tonumber(y))
     end
 end
+
