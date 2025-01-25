@@ -31,6 +31,7 @@ end
 
 function Game.step(dt: number)
     Game.player:step(dt, Game.keyStates, Game.socketSend)
+    Game.background:step(dt)
 end
 
 function Game.draw()

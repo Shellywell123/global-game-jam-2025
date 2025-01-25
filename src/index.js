@@ -113,10 +113,10 @@ function registerWebsocketCallbacks(triggerOpen) {
 
 // Interface enabling Lua to draw to canvas
 const CanvasCalls = {
-    newCanvas: function(transparent) {
+    newCanvas: function(transparent, height) {
         const newCanvasElement = document.createElement("canvas");
         newCanvasElement.width = canvasElement.width;
-        newCanvasElement.height = canvasElement.height;
+        newCanvasElement.height = height ?? canvasElement.height;
         const newCanvas = newCanvasElement.getContext("2d");
 
         const subCanvas = {
