@@ -65,10 +65,10 @@ function Collideable.new(): Collideable
     instance.size_x = 32
     instance.size_y = 16
 
-    instance.sprite_yoffset = 1
+    instance.sprite_yoffset = 0
     instance.sprite_xoffset = 0
 
-    instance.sprite = "bubble.png"
+    instance.sprite = "items.png"
     instance.collision_geometry = rectangular_geometry
 
     return instance
