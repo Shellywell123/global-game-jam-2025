@@ -3,7 +3,11 @@ global config: Config = {
     imageFilenames = {
         "pipe.png",
         "bubble.png",
-        "dirt.png"
+        "dirt.png",
+        "duck.png",
+        "ring.png",
+        "sock.png",
+        "apple.png"
     },
     luaFilenames = {
         "game/main.lua",
