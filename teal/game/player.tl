@@ -154,13 +154,11 @@ function Player.new(): Player
     instance.bubbles[2].x_vel = 0.18
     instance.bubbles[2].bubbleIndex = 1
     instance.bubbles[2].ticker_speed = 1.0
-    instance.bubbles[2].y = 50
 
     instance.bubbles[3].x = 120
     instance.bubbles[3].x_vel = 0.10
     instance.bubbles[3].bubbleIndex = 3
     instance.bubbles[3].ticker_speed = 0.9
-    instance.bubbles[3].y = 100
     return instance
 end
 
