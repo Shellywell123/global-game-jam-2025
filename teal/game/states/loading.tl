@@ -17,4 +17,6 @@ function LoadingState:pointerDown() end
 
 function LoadingState:pointerUp() end
 
+function LoadingState:websocketMessage(message: string) end
+
 return LoadingState 

@@ -95,6 +95,6 @@ function Game.websocketClosed(code: integer, reason: string)
 end
 
 function Game.websocketMessage(message: string)
-    -- currently noop
+    Game.currentState:websocketMessage(message)
 end
 

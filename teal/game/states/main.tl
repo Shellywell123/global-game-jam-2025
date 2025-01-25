@@ -59,4 +59,8 @@ function Main:draw()
     self.player:draw()
 end
 
+function Main:websocketMessage(message: string)
+    -- no-op
+end
+
 return Main

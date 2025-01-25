@@ -43,4 +43,8 @@ function StartScreen:draw()
     self.player:draw()
 end
 
+function StartScreen:websocketMessage(message: string)
+    -- no-op
+end
+
 return StartScreen
