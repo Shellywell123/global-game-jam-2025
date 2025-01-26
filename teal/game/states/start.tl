@@ -42,7 +42,7 @@ function StartScreen:step(dt: number, keyStates: {string:boolean}, socketSend: f
     end
     self.player:step(dt, newKeystates, socketSend)
     local bubble = self.player.bubbles[1]
-    if (bubble.y < 0) then
+    if (bubble.y < -64) then
         if (self.sendTimeout <= 0) then
             socketSend(protocols.requestGameStart)
             self.sendTimeout = 2000
