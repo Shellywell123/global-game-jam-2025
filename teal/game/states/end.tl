@@ -1,7 +1,5 @@
 local type GameState = require("game.gamestate")
-local EndBackground = require("game.endbackground") -- create end background
--- local MainState = require("game.states.main")
-
+local EndBackground = require("game.endbackground")
 
 local record EndScreen is GameState
     background: EndBackground
@@ -15,6 +13,7 @@ local EndScreenMetatable: metatable<EndScreen> = {
 function EndScreen.new() : EndScreen
     local instance: EndScreen = {}
     setmetatable(instance, EndScreenMetatable)
+    instance.background = EndBackground.new()
     return instance -- need scores and players
 end
 
@@ -28,7 +27,7 @@ end
 
 
 function EndScreen:draw()
-    self.background:draw() -- console.error
+    self.background:draw()
 end
 
 return EndScreen
