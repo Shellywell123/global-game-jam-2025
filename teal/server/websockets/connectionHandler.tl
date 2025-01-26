@@ -21,7 +21,7 @@ function ConnectionHandler:handleNext(pegasus: Pegasus, handler: Handler, regist
     local register_senders = {}
 
     for client, frames in pairs(register.messageQueue) do
-        if (#frames == 0) then
+        if (#frames ~= 0) then
             table.insert(register_senders, client)
         end
     end

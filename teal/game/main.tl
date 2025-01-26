@@ -2,6 +2,8 @@ local subprotocol = require("shared.subprotocol")
 local Buttons = require("game.buttons")
 local type GameState = require("game.gamestate")
 local StartState = require("game.states.start")
+local LoadingState = require("game.states.loading")
+local protocols = require("shared.protocols")
 
 global record Game
     currentState: GameState
@@ -22,7 +24,7 @@ Game.socketOpen = false
 
 function Game.init()
     Socket.open(subprotocol)
-    Game.currentState = StartState.new()
+    Game.currentState = LoadingState
     Game.buttons = Buttons.new()
 end
 
@@ -83,8 +85,8 @@ function Game.onButtonRelease()
 end
 
 function Game.websocketOpened()
-    Socket.send("Hello World!")
     Game.socketOpen = true
+    Socket.send(protocols.registerClient)
 end
 
 function Game.websocketClosed(code: integer, reason: string)
@@ -93,6 +95,6 @@ function Game.websocketClosed(code: integer, reason: string)
 end
 
 function Game.websocketMessage(message: string)
-    -- currently noop
+    Game.currentState:websocketMessage(message, Game.changeState)
 end
 

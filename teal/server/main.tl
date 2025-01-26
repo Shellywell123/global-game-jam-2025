@@ -9,6 +9,8 @@ local ConnectionHandler = require('server.websockets.connectionHandler')
 local ServerClientRegister = require('server.websockets.serverClientRegister')
 local socket = require("socket")
 local subprotocol = require("shared.subprotocol")
+local protocols = require("shared.protocols")
+local patterns = require("shared.patterns")
 
 -- Patch the mimetypes.guess function to handle wasm
 local super = mimetypes.guess
@@ -35,13 +37,67 @@ local pegasus = Pegasus:new({
     }
 })
 
+local nextClientIndex = 1
+local clientIndexes: {socket.Client:integer} = {}
+
+local enum GameStates
+    "lobby"
+    "started"
+end
+
+local record ClientData
+    startRequested: boolean
+end
+
+local clientData: {integer:ClientData} = {}
+local gameState: GameStates = "lobby"
+
 -- A FrameHandler which broadcasts any updates to position
 local frameHandler = FrameHandler:new({
-    onTextFrameParsed = function(_: FrameHandler, _: socket.Client, frame: Frame, register: ServerClientRegister)
-        if (string.find(frame.stringContent, "Position updated: x=%d+%.?%d*, y=%d+%.?%d*")) then
-            local broadcast = Frame:newTextFrame(frame.stringContent)
-            register:registerBroadcastToSend(broadcast)
-        end
+    onTextFrameParsed = function(_: FrameHandler, client: socket.Client, frame: Frame, register: ServerClientRegister)
+        if (frame.stringContent == protocols.registerClient) then 
+            if (gameState ~= "lobby") then
+                return -- TODO: maybe a holding screen here?
+            end
+            print("Registering client "..nextClientIndex)
+            clientIndexes[client] = nextClientIndex
+            nextClientIndex = nextClientIndex + 1
+            clientData[clientIndexes[client]] = {
+                startRequested = false
+            }
+            local response = Frame:newTextFrame(protocols.registrationSuccess.." "..clientIndexes[client])
+            register:registerMessageToSend(client, response)
+            return
+       end
+       if (frame.stringContent == protocols.requestGameStart) then
+           if (gameState ~= "lobby") then return end
+           local clientIndex = clientIndexes[client]
+           if (clientIndex) then
+               clientData[clientIndex].startRequested = true
+               local startGame = true
+               for _,v in pairs(clientData) do
+                   if (not v.startRequested) then
+                       startGame = false
+                       break
+                   end
+               end
+               if (startGame) then
+                   print("Starting game...")
+                   local broadcast = Frame:newTextFrame(protocols.gameStarted)
+                   register:registerBroadcastToSend(broadcast)
+               end
+           end
+           return
+       end
+       local lobbyPosX, lobbyPosY, playerIndex = string.match(frame.stringContent, patterns.lobbyPos) 
+       if (lobbyPosX and lobbyPosY and playerIndex) then
+           if (gameState ~= "lobby") then return end
+           local clientIndex = clientIndexes[client]
+           if (clientIndex ~= math.tointeger(playerIndex)) then return end
+           local broadcast = Frame:newTextFrame(frame.stringContent)
+           register:registerBroadcastToSend(broadcast)
+           print(frame.stringContent)
+       end
     end
 })
 
