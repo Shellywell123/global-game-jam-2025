@@ -119,13 +119,17 @@ end
 
 local CollideableMetatable: metatable<Collideable> = {
     __index = Collideable,
- }
+}
 
-function Collideable.new(): Collideable
+local enum BlockType
+    "Needle"
+end
+
+function Collideable.new(x?: number, y?: number, typ?: BlockType): Collideable
     local instance: Collideable = {}
     setmetatable(instance, CollideableMetatable)
-    instance.x = 0
-    instance.y = 0
+    instance.x = x or 0
+    instance.y = y or 0
     instance.offset_y = 0
 
     instance.size_x = 32
@@ -133,10 +137,15 @@ function Collideable.new(): Collideable
 
     instance.sprite_yoffset = 0
     instance.sprite_xoffset = 0
+    instance.can_pop = false
+
+    if typ == "Needle" then
+        instance.sprite_xoffset = 1
+        instance.can_pop = true
+    end
 
     instance.sprite = "items.png"
     instance.collision_geometry = rectangular_geometry
-    instance.can_pop = false
 
     return instance
 end
@@ -165,24 +174,69 @@ end
 
 local CollideableSliceMetatable: metatable<CollideableSlice> = {
     __index = CollideableSlice,
- }
+}
 
-function CollideableSlice.new(): CollideableSlice
+local TILE_CONST <const> = 16;
+
+local function layout1(instance: CollideableSlice)
+    table.insert(instance.objects, Collideable.new(32, 40))
+    table.insert(instance.objects, Collideable.new(64, 40))
+    table.insert(instance.objects, Collideable.new(96, 40, "Needle"))
+
+    table.insert(instance.objects, Collideable.new(192))
+    table.insert(instance.objects, Collideable.new(224))
+end
+
+local function layout2(instance: CollideableSlice)
+    table.insert(instance.objects, Collideable.new(64, 100))
+    table.insert(instance.objects, Collideable.new(96, 100))
+    table.insert(instance.objects, Collideable.new(128, 100))
+
+    table.insert(instance.objects, Collideable.new(96))
+    table.insert(instance.objects, Collideable.new(128))
+    table.insert(instance.objects, Collideable.new(160))
+end
+
+local function layout3(instance: CollideableSlice)
+    table.insert(instance.objects, Collideable.new(16, 42, "Needle"))
+    table.insert(instance.objects, Collideable.new(224, 42, "Needle"))
+
+    table.insert(instance.objects, Collideable.new(16))
+    table.insert(instance.objects, Collideable.new(48))
+    table.insert(instance.objects, Collideable.new(80))
+    table.insert(instance.objects, Collideable.new(224))
+    table.insert(instance.objects, Collideable.new(208))
+    table.insert(instance.objects, Collideable.new(176))
+end
+
+local function layout4(instance: CollideableSlice)
+    table.insert(instance.objects, Collideable.new(224, 42, "Needle"))
+    table.insert(instance.objects, Collideable.new(292, 42, "Needle"))
+
+    table.insert(instance.objects, Collideable.new(16))
+    table.insert(instance.objects, Collideable.new(48, 0))
+    table.insert(instance.objects, Collideable.new(48, 16))
+end
+
+local function layout5(instance: CollideableSlice)
+    table.insert(instance.objects, Collideable.new(128, 64, "Needle"))
+    table.insert(instance.objects, Collideable.new(160, 64, "Needle"))
+end
+
+local LAYOUT_FUNCTIONS <const> = {
+    layout1, layout2, layout3, layout4, layout5
+}
+
+
+function CollideableSlice.new(layout: integer): CollideableSlice
     local instance: CollideableSlice = {}
     setmetatable(instance, CollideableSliceMetatable)
     instance.objects = {}
-    table.insert(instance.objects, Collideable.new())
-    table.insert(instance.objects, Collideable.new())
-    instance.objects[2].x = 32
-    table.insert(instance.objects, Collideable.new())
-    instance.objects[3].x = 64
-    table.insert(instance.objects, Collideable.new())
-    instance.objects[4].x = 96
 
-    table.insert(instance.objects, Collideable.new())
-    instance.objects[4].x = 224
-    instance.objects[4].sprite_xoffset = 1
-    instance.objects[4].can_pop = true
+    if layout ~= 0 then
+        LAYOUT_FUNCTIONS[layout](instance)
+    end
+
     return instance
 end
 
