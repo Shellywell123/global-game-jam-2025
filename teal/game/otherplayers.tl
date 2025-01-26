@@ -32,27 +32,30 @@ function OtherPlayers:draw()
     end
 end
 
-function OtherPlayers:websocketMessage(message: string, selfindex: integer)
-    local lobbyPosX, lobbyPosY, playerIndex = string.match(message, patterns.lobbyPos)
-    if (lobbyPosX and lobbyPosY and playerIndex) then
-        local playerIndexInt = math.tointeger(playerIndex)
-        if (playerIndexInt == selfindex) then return end
-        local bubbles = self.bubbles[playerIndexInt]
+function OtherPlayers:newLobbyMessage(lobbyPosX: integer, lobbyPosY: integer, playerIndex: integer, selfIndex: integer)
+        if (playerIndex == selfindex) then return end
+        local bubbles = self.bubbles[playerIndex]
         if (bubbles == nil) then
             bubbles = {}
-            self.bubbles[playerIndexInt] = bubbles
+            self.bubbles[playerIndex] = bubbles
         end
         if (#bubbles == 0) then
-            local tint = Util.getColourForPlayerIndex(playerIndexInt)
-            table.insert(bubbles, Bubble.new(4, math.tointeger(lobbyPosX), nil, math.tointeger(lobbyPosY), tint))
+            local tint = Util.getColourForPlayerIndex(playerIndex)
+            table.insert(bubbles, Bubble.new(4, lobbyPosX, nil, lobbyPosY, tint))
         else
             local bubble = bubbles[1]
             if (#bubbles > 1) then
-                self.bubbles[playerIndexInt] = bubbles
+                self.bubbles[playerIndex] = bubbles
             end
-            bubble.draw_x = math.tointeger(lobbyPosX)
-            bubble.draw_y = math.tointeger(lobbyPosY)
+            bubble.draw_x = lobbyPosX
+            bubble.draw_y = lobbyPosY
         end
+end
+
+function OtherPlayers:websocketMessage(message: string, selfindex: integer)
+    local lobbyPosX, lobbyPosY, playerIndex = string.match(message, patterns.lobbyPos)
+    if (lobbyPosX and lobbyPosY and playerIndex) then
+        self:newLobbyMessage(math.tointeger(lobbyPosX), math.tointeger(lobbyPosY), math.tointeger(playerIndex), selfindex)
     end
 end
 
