@@ -1,7 +1,7 @@
 global type Config = record
     imageFilenames: {string}
     luaFilenames: {string}
-    audioFilenames: {string}
+    audioFilenames: {string:boolean}
     blankColour: string
     displayWidth: integer
     displayHeight: integer

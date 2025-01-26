@@ -50,10 +50,11 @@ function prefetchImage(path) {
     return fetchFile();
 };
 
-function prefetchAudio(path) {
+function prefetchAudio(path, loop) {
     async function fetchFile() {
         const src = ""+window.location.origin+"/assets/"+path;
 	const audio = new Audio(src);
+	audio.loop = loop;
 	audioMap.set(path, audio);
 	return new Promise((resolve) => {
 	    audio.addEventListener("canplay", () => resolve());
@@ -83,10 +84,10 @@ async function initialise(config) {
         const promise = prefetchLuaFile(name);
         prefetchArray.push(promise);
     });
-    config.audioFilenames.forEach(name => {
-	const promise = prefetchAudio(name);
+    for (const [name, loop] of Object.entries(config.audioFilenames)) {
+	const promise = prefetchAudio(name,loop);
 	prefetchArray.push(promise);
-    });
+    };
     canvasElement.width = config.displayWidth;
     canvasElement.height = config.displayHeight;
     blankColour = config.blankColour;

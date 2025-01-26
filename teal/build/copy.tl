@@ -22,7 +22,7 @@ for _, filename in ipairs(config.luaFilenames) do
     copyFileToAssets(filename)
 end
 
-for _, filename in ipairs(config.audioFilenames) do
+for filename, _ in pairs(config.audioFilenames) do
     copyFileToAssets(filename)
 end
 

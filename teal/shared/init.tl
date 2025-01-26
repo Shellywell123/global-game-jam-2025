@@ -37,7 +37,7 @@ global config: Config = {
         "game/endbackground.lua"
     },
     audioFilenames = {
-        "menu.mp3"
+        ["menu.mp3"] = true
     },
     blankColour = "black",
     pageBackgroundColour = "powderblue",
