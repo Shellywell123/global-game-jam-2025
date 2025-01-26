@@ -71,7 +71,7 @@ function Main.new(selfindex: integer, otherplayers: OtherPlayers) : Main
     return instance
 end
 
-function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState))
+function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState, ?boolean))
     -- update all the active animations
     for _, anim in ipairs(self.animations) do
         anim:step(dt)
@@ -153,7 +153,7 @@ function Main:draw()
     end
 end
 
-function Main:websocketMessage(message: string, changeState: function(GameState), _: function(string))
+function Main:websocketMessage(message: string, changeState: function(GameState, ?boolean), _: function(string))
     self.otherplayers:websocketMessage(message, self.selfindex)
 end
 

@@ -16,6 +16,7 @@ global record Game
     currentState: GameState
     canvas: Canvas.SubCanvas
     timeElapsed: number
+    enable_timer: boolean
     buttons: Buttons
     keyStates: {string:boolean}
     socketOpen: boolean
@@ -53,16 +54,19 @@ function Game.socketSend(message: string)
     end
 end
 
-function Game.changeState(newState: GameState)
+function Game.changeState(newState: GameState, timer?: boolean)
+    Game.enable_timer = timer or false
+    if Game.enable_timer then
+        Game.timeElapsed = 0
+    end
     Game.currentState = newState
 end
 
 function Game.step(dt: number)
-    if (Game.currentState == MainState) then
+    if (Game.enable_timer) then
         Game.timeElapsed = Game.timeElapsed + (dt/1000) -- fergus isnt as fast as ai, but hes more accurate
-    else
-        Game.timeElapsed = 0
     end
+
     Game.currentState:step(dt, Game.keyStates, Game.socketSend, Game.changeState)
 end
 
@@ -70,7 +74,7 @@ function Game.draw()
     Game.buttons:draw()
     Game.currentState:draw()
     Game.canvas.clearCanvas()
-    if (Game.currentState == MainState) then
+    if (Game.enable_timer) then
         drawScore(Game.canvas, Game.timeElapsed)
     end
     Game.canvas.draw(0, 0)
