@@ -1,5 +1,5 @@
 local type GameState = require("game.gamestate")
-local EndBackground = require("game.startbackground") -- create end background
+local EndBackground = require("game.endbackground") -- create end background
 -- local MainState = require("game.states.main")
 
 
@@ -19,7 +19,8 @@ function EndScreen.new() : EndScreen
 end
 
 
-function EndScreen:step(numberOfPlayers: number, keyStates: {string:boolean}, socketSend: function(string), changeState:function(GameState))
+function EndScreen:step(numberOfPlayers: number, keyStates: {string:boolean}, socketSend: function(string), changeState:function(GameState)) 
+    -- option to restart game and load new game?
     local newKeyStates = {} -- boolean required
     setmetatable(newKeyStates, {__index = keyStates})
     -- show score
@@ -27,7 +28,7 @@ end
 
 
 function EndScreen:draw()
-    -- self.background:draw()
+    self.background:draw() -- console.error
 end
 
 return EndScreen
