@@ -10,6 +10,7 @@ local ServerClientRegister = require('server.websockets.serverClientRegister')
 local socket = require("socket")
 local subprotocol = require("shared.subprotocol")
 local protocols = require("shared.protocols")
+local patterns = require("shared.patterns")
 
 -- Patch the mimetypes.guess function to handle wasm
 local super = mimetypes.guess
@@ -39,17 +40,25 @@ local pegasus = Pegasus:new({
 local nextClientIndex = 1
 local clientIndexes: {socket.Client:integer} = {}
 
+local enum GameStates
+    "lobby"
+    "started"
+end
+
 local record ClientData
     startRequested: boolean
 end
 
 local clientData: {integer:ClientData} = {}
+local gameState: GameStates = "lobby"
 
 -- A FrameHandler which broadcasts any updates to position
 local frameHandler = FrameHandler:new({
     onTextFrameParsed = function(_: FrameHandler, client: socket.Client, frame: Frame, register: ServerClientRegister)
         if (frame.stringContent == protocols.registerClient) then 
-            -- TODO: what if a client registers after game start??
+            if (gameState ~= "lobby") then
+                return -- TODO: maybe a holding screen here?
+            end
             print("Registering client "..nextClientIndex)
             clientIndexes[client] = nextClientIndex
             nextClientIndex = nextClientIndex + 1
@@ -58,8 +67,10 @@ local frameHandler = FrameHandler:new({
             }
             local response = Frame:newTextFrame(protocols.registrationSuccess.." "..clientIndexes[client])
             register:registerMessageToSend(client, response)
-       elseif (frame.stringContent == protocols.requestGameStart) then
-           -- TODO: what if a game has already started?
+            return
+       end
+       if (frame.stringContent == protocols.requestGameStart) then
+           if (gameState ~= "lobby") then return end
            local clientIndex = clientIndexes[client]
            if (clientIndex) then
                clientData[clientIndex].startRequested = true
@@ -76,6 +87,16 @@ local frameHandler = FrameHandler:new({
                    register:registerBroadcastToSend(broadcast)
                end
            end
+           return
+       end
+       local lobbyPosX, lobbyPosY, playerIndex = string.match(frame.stringContent, patterns.lobbyPos) 
+       if (lobbyPosX and lobbyPosY and playerIndex) then
+           if (gameState ~= "lobby") then return end
+           local clientIndex = clientIndexes[client]
+           if (clientIndex ~= math.tointeger(playerIndex)) then return end
+           local broadcast = Frame:newTextFrame(frame.stringContent)
+           register:registerBroadcastToSend(broadcast)
+           print(frame.stringContent)
        end
     end
 })

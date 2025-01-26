@@ -24,6 +24,7 @@ global config: Config = {
         "game/collideable.lua",
         "shared/subprotocol.lua",
         "shared/protocols.lua",
+        "shared/patterns.lua",
         "shared/init.lua",
         "game/const.lua",
         "game/startbackground.lua",
