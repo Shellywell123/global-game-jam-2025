@@ -93,11 +93,17 @@ function Game.setUserInteracted()
 end
 
 function Game.keyDown(key: string)
+    if key == "w" or key == "s" then
+        return
+    end
     Game.keyStates[key] = true
     Game.setUserInteracted()
 end
 
 function Game.keyPress(key: string)
+    if key == "w" or key == "s" then
+        return
+    end
     Game.keyStates[key] = true
     -- Socket.send("keyPress: "..key)
     Game.setUserInteracted()
