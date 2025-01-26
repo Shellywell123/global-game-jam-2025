@@ -32,7 +32,9 @@ global config: Config = {
         "game/startbackground.lua",
         "game/states/main.lua",
         "game/states/start.lua",
-        "game/states/loading.lua"
+        "game/states/loading.lua",
+        "game/states/end.lua",
+        "game/endbackground.lua"
     },
     blankColour = "black",
     pageBackgroundColour = "powderblue",
