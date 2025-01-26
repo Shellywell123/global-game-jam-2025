@@ -71,14 +71,13 @@ function Main.new(selfindex: integer, otherplayers: OtherPlayers) : Main
     return instance
 end
 
-function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState))
+function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState, ?boolean))
     -- update all the active animations
     for _, anim in ipairs(self.animations) do
         anim:step(dt)
     end
 
     local to_pop = {}
-    
 
     if (#self.player.bubbles == 0) then
         local endState = EndState.new()
@@ -146,13 +145,15 @@ function Main:draw()
     self.background:draw()
     self.otherplayers:draw()
     self.player:draw()
+    -- timeElapsed = 0 -- init elapased time to 0
+    -- self.score:draw(timeElapsed)
     -- draw all the animations
     for _, anim in ipairs(self.animations) do
         anim:draw()
     end
 end
 
-function Main:websocketMessage(message: string, changeState: function(GameState), _: function(string))
+function Main:websocketMessage(message: string, changeState: function(GameState, ?boolean), _: function(string))
     self.otherplayers:websocketMessage(message, self.selfindex)
 end
 

@@ -3,10 +3,20 @@ local Buttons = require("game.buttons")
 local type GameState = require("game.gamestate")
 local StartState = require("game.states.start")
 local LoadingState = require("game.states.loading")
+local MainState = require("game.states.main")
 local protocols = require("shared.protocols")
+
+local function drawScore(canvas: Canvas.SubCanvas, timeElapsed: number)
+    local timeElapsedString = string.format("%.2fs", timeElapsed)
+    canvas.clearCanvas()
+    canvas.drawText(0, 0, timeElapsedString)
+end
 
 global record Game
     currentState: GameState
+    canvas: Canvas.SubCanvas
+    timeElapsed: number
+    enable_timer: boolean
     buttons: Buttons
     keyStates: {string:boolean}
     socketOpen: boolean
@@ -35,6 +45,7 @@ function Game.init()
     Socket.open(subprotocol)
     Game.currentState = LoadingState
     Game.buttons = Buttons.new()
+    Game.canvas = Canvas.newCanvas(true)
 end
 
 function Game.socketSend(message: string)
@@ -43,17 +54,30 @@ function Game.socketSend(message: string)
     end
 end
 
-function Game.changeState(newState: GameState)
+function Game.changeState(newState: GameState, timer?: boolean)
+    Game.enable_timer = timer or false
+    if Game.enable_timer then
+        Game.timeElapsed = 0
+    end
     Game.currentState = newState
 end
 
 function Game.step(dt: number)
+    if (Game.enable_timer) then
+        Game.timeElapsed = Game.timeElapsed + (dt/1000) -- fergus isnt as fast as ai, but hes more accurate
+    end
+
     Game.currentState:step(dt, Game.keyStates, Game.socketSend, Game.changeState)
 end
 
 function Game.draw()
     Game.buttons:draw()
     Game.currentState:draw()
+    Game.canvas.clearCanvas()
+    if (Game.enable_timer) then
+        drawScore(Game.canvas, Game.timeElapsed)
+    end
+    Game.canvas.draw(0, 0)
 end
 
 function Game.keyUp(key: string)
@@ -69,11 +93,17 @@ function Game.setUserInteracted()
 end
 
 function Game.keyDown(key: string)
+    if key == "w" or key == "s" then
+        return
+    end
     Game.keyStates[key] = true
     Game.setUserInteracted()
 end
 
 function Game.keyPress(key: string)
+    if key == "w" or key == "s" then
+        return
+    end
     Game.keyStates[key] = true
     -- Socket.send("keyPress: "..key)
     Game.setUserInteracted()

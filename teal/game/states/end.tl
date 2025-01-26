@@ -18,7 +18,7 @@ function EndScreen.new() : EndScreen
 end
 
 
-function EndScreen:step(numberOfPlayers: number, keyStates: {string:boolean}, socketSend: function(string), changeState:function(GameState)) 
+function EndScreen:step(numberOfPlayers: number, keyStates: {string:boolean}, socketSend: function(string), changeState:function(GameState, ?boolean))
     -- option to restart game and load new game?
     local newKeyStates = {} -- boolean required
     setmetatable(newKeyStates, {__index = keyStates})

@@ -30,7 +30,7 @@ function StartScreen.new(selfindex: integer) : StartScreen
     return instance
 end
 
-function StartScreen:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState))
+function StartScreen:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState, ?boolean))
     local newKeystates = {}
     setmetatable(newKeystates, {__index = keyStates})
     -- hacky: make it move up if any keys pressed
@@ -60,10 +60,10 @@ function StartScreen:draw()
     self.player:draw()
 end
 
-function StartScreen:websocketMessage(message: string, changeState: function(GameState), _: function(string))
+function StartScreen:websocketMessage(message: string, changeState: function(GameState, ?boolean), _: function(string))
     if (message == protocols.gameStarted) then
         local mainState = MainState.new(self.selfindex, self.otherplayers)
-        changeState(mainState)
+        changeState(mainState, true)
     else
         self.otherplayers:websocketMessage(message, self.selfindex)
     end

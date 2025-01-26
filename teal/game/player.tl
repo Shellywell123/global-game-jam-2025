@@ -107,6 +107,11 @@ function Player:draw()
     end
 end
 
+-- function Player:timerDraw()
+--     text(os.date("%M:%S", os.difftime(os.time(), start)),config.displayWidth / 2, config.displayHeight / 2)
+--    n. -- self.canvas.drawImage("bubble.png", 0, SPRITE_STRIDE * 2, size, size, 0, 0, size, size)
+-- end
+
 function Player:updatePosition(_: number, _: number)
     -- noop
 end
