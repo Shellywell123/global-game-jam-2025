@@ -62,7 +62,7 @@ end
 
 function StartScreen:websocketMessage(message: string, changeState: function(GameState))
     if (message == protocols.gameStarted) then
-        local mainState = MainState.new(self.selfindex)
+        local mainState = MainState.new(self.selfindex, self.otherplayers)
         changeState(mainState)
     else
         self.otherplayers:websocketMessage(message, self.selfindex)
