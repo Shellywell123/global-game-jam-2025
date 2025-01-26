@@ -13,6 +13,7 @@ end
 global record Canvas
     record SubCanvas
         draw: function(x: number, y: number)
+        drawText: function(x: number, y: number, text: string)
         drawImage: function(path: string, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number)
         clearCanvas: function()
     end

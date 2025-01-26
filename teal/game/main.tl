@@ -3,10 +3,19 @@ local Buttons = require("game.buttons")
 local type GameState = require("game.gamestate")
 local StartState = require("game.states.start")
 local LoadingState = require("game.states.loading")
+local MainState = require("game.states.main")
 local protocols = require("shared.protocols")
+
+local function drawScore(canvas: Canvas.SubCanvas, timeElapsed: number)
+    local timeElapsedString = string.format("%.2fs", timeElapsed)
+    canvas.clearCanvas()
+    canvas.drawText(0, 0, timeElapsedString)
+end
 
 global record Game
     currentState: GameState
+    canvas: Canvas.SubCanvas
+    timeElapsed: number
     buttons: Buttons
     keyStates: {string:boolean}
     socketOpen: boolean
@@ -35,6 +44,7 @@ function Game.init()
     Socket.open(subprotocol)
     Game.currentState = LoadingState
     Game.buttons = Buttons.new()
+    Game.canvas = Canvas.newCanvas(true)
 end
 
 function Game.socketSend(message: string)
@@ -48,12 +58,22 @@ function Game.changeState(newState: GameState)
 end
 
 function Game.step(dt: number)
+    if (Game.currentState == MainState) then
+        Game.timeElapsed = Game.timeElapsed + (dt/1000) -- fergus isnt as fast as ai, but hes more accurate
+    else
+        Game.timeElapsed = 0
+    end
     Game.currentState:step(dt, Game.keyStates, Game.socketSend, Game.changeState)
 end
 
 function Game.draw()
     Game.buttons:draw()
     Game.currentState:draw()
+    Game.canvas.clearCanvas()
+    if (Game.currentState == MainState) then
+        drawScore(Game.canvas, Game.timeElapsed)
+    end
+    Game.canvas.draw(0, 0)
 end
 
 function Game.keyUp(key: string)

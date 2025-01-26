@@ -17,7 +17,7 @@ var audioMap = new Map();
 var websocket;
 var game;
 
-function transformPointToCanvas(x,y) {
+function transformPointToCanvas(x, y) {
     const offsetWidthMinusPadding = canvasElement.offsetWidth - parseInt(canvasStyle.paddingLeft) - parseInt(canvasStyle.paddingRight);
     const offsetHeightMinusPadding = canvasElement.offsetHeight - parseInt(canvasStyle.paddingTop) - parseInt(canvasStyle.paddingBottom);
     const xScale = offsetWidthMinusPadding / canvasElement.width;
@@ -41,7 +41,7 @@ function transformPointToCanvas(x,y) {
 
 function prefetchImage(path) {
     async function fetchFile() {
-        const url = new URL("assets/"+path, window.location.origin);
+        const url = new URL("assets/" + path, window.location.origin);
         let blob = await fetch(url).then(r => r.blob());
         const bmp = await createImageBitmap(blob);
         imageMap.set(path, bmp);
@@ -66,7 +66,7 @@ function prefetchAudio(path, loop) {
 
 function prefetchLuaFile(path) {
     async function fetchFile() {
-        const url = new URL("assets/"+path, window.location.origin);
+        const url = new URL("assets/" + path, window.location.origin);
         let rawText = await fetch(url).then(r => r.text());
         await factory.mountFile(path, rawText);
     };
@@ -99,8 +99,8 @@ function registerWebsocketCallbacks(triggerOpen) {
     if (websocket) {
         if (game) {
             if (game["websocketMessage"] != undefined) {
-                websocket.onmessage = function(event) {
-		    game.websocketMessage(event.data);
+                websocket.onmessage = function (event) {
+                    game.websocketMessage(event.data);
                 }
             }
             if (game["websocketOpened"] != undefined) {
@@ -108,18 +108,18 @@ function registerWebsocketCallbacks(triggerOpen) {
                 if (triggerOpen && websocket.readyState == WebSocket.OPEN) {
                     game.websocketOpened();
                 }
-                websocket.onopen = function() {
+                websocket.onopen = function () {
                     game.websocketOpened();
                 }
             }
             if (game["websocketClosed"] != undefined) {
-                websocket.onclose = function(event) {
+                websocket.onclose = function (event) {
                     game.websocketClosed(event.code, event.reason);
                 }
             }
 
             if (game["websocketError"] != undefined) {
-                websocket.onerror = function() {
+                websocket.onerror = function () {
                     game.websocketError();
                 }
             }
@@ -139,7 +139,7 @@ const AudioCalls = {
 
 // Interface enabling Lua to draw to canvas
 const CanvasCalls = {
-    newCanvas: function(transparent, height, tint) {
+    newCanvas: function (transparent, height, tint) {
         const newCanvasElement = document.createElement("canvas");
         newCanvasElement.width = canvasElement.width;
         newCanvasElement.height = height ?? canvasElement.height;
@@ -163,59 +163,66 @@ const CanvasCalls = {
             // sw/sh: width and height
             // dx, dy: location to place the sprite
             // height and width
-            drawImage: function(path, sx, sy, sw, sh, dx, dy, dw, dh) {
+            drawImage: function (path, sx, sy, sw, sh, dx, dy, dw, dh) {
                 if (imageMap.has(path)) {
                     const bmp = imageMap.get(path);
                     drawCanvas.drawImage(bmp, sx, sy, sw, sh, dx, dy, dw, dh);
                 }
             },
 
-            draw: function(x, y) {
+            draw: function (x, y) {
+                canvas.drawImage(newCanvasElement, x, y)
+            },
+
+            drawText: function (x, y, text) {
+                canvas.font = "25px Arial";
+                canvas.fillStyle = "white";
+                canvas.fillText(text, 17, 25);
                 canvas.drawImage(newCanvasElement, x, y)
             }
         }
 
         if (tint != undefined) {
-            subCanvas.draw = function(x, y) {
+            subCanvas.draw = function (x, y) {
                 newCanvas.globalCompositeOperation = "source-over";
                 newCanvas.drawImage(drawCanvasElement, 0, 0)
                 newCanvas.globalCompositeOperation = "source-atop";
                 newCanvas.fillStyle = tint;
                 newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
-		canvas.drawImage(newCanvasElement, x, y)
-	    }
+                canvas.drawImage(newCanvasElement, x, y)
+            }
         } else {
-            subCanvas.draw = function(x, y) {
+            subCanvas.draw = function (x, y) {
                 canvas.drawImage(newCanvasElement, x, y)
             }
         }
 
         if (transparent) {
             if (drawCanvas == null) {
-		subCanvas.clearCanvas = function() {
+                subCanvas.clearCanvas = function () {
                     newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
                 }
             } else {
-		subCanvas.clearCanvas = function() {
+                subCanvas.clearCanvas = function () {
                     newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
-		    drawCanvas.clearRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
+                    drawCanvas.clearRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
                 }
             }
         } else {
             if (drawCanvas == null) {
-                subCanvas.clearCanvas = function() {
+                subCanvas.clearCanvas = function () {
                     newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
                     newCanvas.fillStyle = blankColour;
                     newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
                 }
-            } else { 
-                subCanvas.clearCanvas = function() {
+            } else {
+                subCanvas.clearCanvas = function () {
                     newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
                     newCanvas.fillStyle = blankColour;
                     newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
-		    drawCanvas.clearRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
+                    drawCanvas.clearRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
                 }
-	    }
+            }
         }
 
         subCanvas.clearCanvas();
@@ -226,18 +233,18 @@ const CanvasCalls = {
 
 // Interface enabling Lua to interact with WebSockets
 const SocketCalls = {
-    open: function(subprotocol) {
+    open: function (subprotocol) {
         websocket = new WebSocket(`ws://${window.location.host}/websocket`, subprotocol);
         registerWebsocketCallbacks(false);
     },
 
-    send: function(data) {
+    send: function (data) {
         if (websocket) {
             websocket.send(data)
         }
     },
 
-    close: function() {
+    close: function () {
         if (websocket) {
             websocket.close()
         }
@@ -313,8 +320,8 @@ async function execute() {
 
         if (game["pointerDown"] != undefined) {
             document.addEventListener('pointerdown', (event) => {
-                let x,y;
-                [x,y] = transformPointToCanvas(event.pageX, event.pageY);
+                let x, y;
+                [x, y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
                     game.onButton(x, y);
                 }
@@ -323,8 +330,8 @@ async function execute() {
 
         if (game["pointerUp"] != undefined) {
             document.addEventListener('pointerup', (event) => {
-                let x,y;
-                [x,y] = transformPointToCanvas(event.pageX, event.pageY);
+                let x, y;
+                [x, y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
                     game.onButtonRelease();
                 }

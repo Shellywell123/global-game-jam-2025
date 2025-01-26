@@ -78,7 +78,6 @@ function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function
     end
 
     local to_pop = {}
-    
 
     if (#self.player.bubbles == 0) then
         local endState = EndState.new()
@@ -146,6 +145,8 @@ function Main:draw()
     self.background:draw()
     self.otherplayers:draw()
     self.player:draw()
+    -- timeElapsed = 0 -- init elapased time to 0
+    -- self.score:draw(timeElapsed)
     -- draw all the animations
     for _, anim in ipairs(self.animations) do
         anim:draw()
