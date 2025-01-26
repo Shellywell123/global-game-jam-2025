@@ -20,6 +20,10 @@ global record Canvas
     newCanvas: function(transparent: boolean, height?: integer, tintColour?: string): SubCanvas
 end
 
+global record Audio
+   playAudio: function(path: string) 
+end
+
 global record Socket
     open: function(subprotocol: string)
     send: function(data: string)

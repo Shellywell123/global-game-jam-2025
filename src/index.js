@@ -126,6 +126,16 @@ function registerWebsocketCallbacks(triggerOpen) {
     }
 };
 
+// Interface enabling Lua to play audio
+const AudioCalls = {
+    playAudio: function(path) {
+        if (audioMap.has(path)) {
+            const audio = audioMap.get(path);
+	    audio.play();
+        }
+    }
+}
+
 // Interface enabling Lua to draw to canvas
 const CanvasCalls = {
     newCanvas: function(transparent, height, tint) {
@@ -271,6 +281,9 @@ async function execute() {
 
         // Set up canvas
         lua.global.set("Canvas", CanvasCalls);
+
+        // And audio
+	lua.global.set("Audio", AudioCalls);
 
         // Run the main file
         await lua.doFile(config.entryPoint);
