@@ -89,8 +89,8 @@ function Bubble.new(index: integer, x?: integer, x_vel?: number, y?: integer, ti
     instance.ephemeral_y_vel = 0
     instance.ticker_speed = 1.1
     instance.ticker = 0
-    instance.draw_x = 0
-    instance.draw_y = 0
+    instance.draw_x = math.floor(instance.x)
+    instance.draw_y = math.floor(instance.y)
     instance.invulnerableTime = 0
     instance.collision_vector = nil
     instance.tint = tint
