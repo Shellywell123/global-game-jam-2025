@@ -45,13 +45,6 @@ function Background.new(): Background
     for i = 1,NUM_SECTIONS do
         table.insert(instance.slices, BackgroundSlice.new(config.displayHeight - SLICE_HEIGHT_PX * (NUM_BLANKS + i)))
     end
-    -- for y=0,num_sections do
-    --     table.insert(instance.slices, BackgroundSlice.new((config.displayHeight-GAME_HEIGHT) - SLICE_HEIGHT_PX//2 + (y * SLICE_HEIGHT_PX), nil))
-    -- end
-    -- -- then we add some blank slices
-    -- for y=0, NUM_BLANKS do
-    --     table.insert(instance.slices, BackgroundSlice.new((config.displayHeight-GAME_HEIGHT) - SLICE_HEIGHT_PX//2 + ((num_sections + y)*SLICE_HEIGHT_PX), 0))
-    -- end
     instance.canvas = Canvas.newCanvas(false, game_height)
     for x=0, (config.displayWidth//TILE_SIZE) do
         for y=0, (game_height//TILE_SIZE) do

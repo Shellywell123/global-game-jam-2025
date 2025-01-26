@@ -28,7 +28,7 @@ function BackgroundSlice.new(y: integer, layout?: integer): BackgroundSlice
     setmetatable(instance, BackgroundSliceMetatable)
     instance.canvas = Canvas.newCanvas(true)
 
-    instance.collision_slice = CollideableSlice.new(layout or math.random(1,2))
+    instance.collision_slice = CollideableSlice.new(layout or math.random(1,5))
     for i=1,SLICE_HEIGHT do
         local leftTile = math.random(0, 3)
         local rightTile = math.random(0, 3)
