@@ -262,7 +262,7 @@ function Player:pop(i: integer)
     if big_pop then
         for size, num in ipairs(BIG_POP_BUBBLES) do
             for i = 1, num do
-                local b = Bubble.new(size, math.floor(bubble_copy.x), nil, math.floor(bubble_copy.y))
+                local b = Bubble.new(size, math.floor(bubble_copy.x), nil, math.floor(bubble_copy.y), bubble_copy.tint)
                 b.ephemeral_y_vel = randomY()
                 b.ephemeral_x_vel = randomX() * 8
                 b.invulnerableTime = bubble_copy.invulnerableTime
