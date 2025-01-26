@@ -43,7 +43,7 @@ function StartScreen:draw()
     self.player:draw()
 end
 
-function StartScreen:websocketMessage(message: string)
+function StartScreen:websocketMessage(message: string, changeState: function(GameState))
     -- no-op
 end
 

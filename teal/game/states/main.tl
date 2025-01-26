@@ -59,7 +59,7 @@ function Main:draw()
     self.player:draw()
 end
 
-function Main:websocketMessage(message: string)
+function Main:websocketMessage(message: string, changeState: function(GameState))
     -- no-op
 end
 

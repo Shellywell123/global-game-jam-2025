@@ -96,6 +96,6 @@ function Game.websocketClosed(code: integer, reason: string)
 end
 
 function Game.websocketMessage(message: string)
-    Game.currentState:websocketMessage(message)
+    Game.currentState:websocketMessage(message, Game.changeState)
 end
 

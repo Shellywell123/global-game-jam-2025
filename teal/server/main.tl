@@ -43,10 +43,11 @@ local clientIndexes: {socket.Client:integer} = {}
 local frameHandler = FrameHandler:new({
     onTextFrameParsed = function(_: FrameHandler, client: socket.Client, frame: Frame, register: ServerClientRegister)
         if (frame.stringContent == protocols.registerClient) then 
+            print("Registering client "..nextClientIndex)
             clientIndexes[client] = nextClientIndex
             nextClientIndex = nextClientIndex + 1
             local response = Frame:newTextFrame(protocols.registrationSuccess.." "..clientIndexes[client])
-            register:registerMessagesToSend({client}, response)
+            register:registerMessageToSend(client, response)
         end
     end
 })

@@ -6,7 +6,7 @@ local interface GameState
     keyPress: function(self: self, key: string)
     pointerDown: function(self: self)
     pointerUp: function(self: self)
-    websocketMessage: function(self: self, message: string)
+    websocketMessage: function(self: self, message: string, changeState: function(GameState))
 end
 
 return GameState

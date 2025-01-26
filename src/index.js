@@ -81,18 +81,15 @@ function registerWebsocketCallbacks(triggerOpen) {
         if (game) {
             if (game["websocketMessage"] != undefined) {
                 websocket.onmessage = function(event) {
-                    game.websocketMessage(event.data);
+		    game.websocketMessage(event.data);
                 }
             }
             if (game["websocketOpened"] != undefined) {
-                console.log("a")
                 console.log(websocket.readyState)
                 if (triggerOpen && websocket.readyState == WebSocket.OPEN) {
-                    console.log("b")
                     game.websocketOpened();
                 }
                 websocket.onopen = function() {
-                    console.log("c")
                     game.websocketOpened();
                 }
             }
