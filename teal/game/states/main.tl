@@ -1,6 +1,8 @@
 local Background = require("game.background")
 local Player = require("game.player")
 local type GameState = require("game.gamestate")
+local EndState = require("game.states.end")
+
 
 local record SpriteAnimation
     canvas: Canvas.SubCanvas
@@ -69,6 +71,14 @@ function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function
     end
 
     local to_pop = {}
+    
+
+    if (#self.player.bubbles == 0) then
+        local endState = EndState.new()
+        changeState(endState)
+        endState:step(dt, {}, socketSend, changeState)
+    end
+
     for i, bubble in ipairs(self.player.bubbles) do
         local radius = bubble:radius()
         local squared_radius = radius * radius

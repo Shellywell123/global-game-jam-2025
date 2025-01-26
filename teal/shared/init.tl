@@ -26,7 +26,8 @@ global config: Config = {
         "game/const.lua",
         "game/startbackground.lua",
         "game/states/main.lua",
-        "game/states/start.lua"
+        "game/states/start.lua",
+        "game/states/end.lua"
     },
     blankColour = "black",
     pageBackgroundColour = "powderblue",
