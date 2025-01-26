@@ -17,10 +17,19 @@ global record Game
     keyPress: function(key: string)
     pointerDown: function()
     pointerUp: function()
+    userInteracted: boolean
+    queuedAudio: {string}
 end
 
 Game.keyStates = {}
 Game.socketOpen = false
+Game.userInteracted = false
+Game.queuedAudio = {}
+
+function Game.playAudio(path: string)
+    if (Game.userInteracted) then Audio.playAudio(path)
+    else table.insert(Game.queuedAudio, path) end
+end
 
 function Game.init()
     Socket.open(subprotocol)
@@ -51,13 +60,23 @@ function Game.keyUp(key: string)
     Game.keyStates[key] = false
 end
 
+function Game.setUserInteracted()
+    Game.userInteracted = true
+    for _,v in ipairs(Game.queuedAudio) do
+        Audio.playAudio(v)
+    end
+    Game.queuedAudio = {}
+end
+
 function Game.keyDown(key: string)
     Game.keyStates[key] = true
+    Game.setUserInteracted()
 end
 
 function Game.keyPress(key: string)
     Game.keyStates[key] = true
-    Socket.send("keyPress: "..key)
+    -- Socket.send("keyPress: "..key)
+    Game.setUserInteracted()
 end
 
 function Game.pointerDown()
@@ -69,6 +88,7 @@ function Game.pointerUp()
 end
 
 function Game.onButton(x: number, y: number)
+    Game.setUserInteracted()
     local move = Game.buttons:onClicked(x, y)
     if (move == -1) then
         Game.keyPress("touchLeft")
@@ -95,6 +115,6 @@ function Game.websocketClosed(code: integer, reason: string)
 end
 
 function Game.websocketMessage(message: string)
-    Game.currentState:websocketMessage(message, Game.changeState)
+    Game.currentState:websocketMessage(message, Game.changeState, Game.playAudio)
 end
 

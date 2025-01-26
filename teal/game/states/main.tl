@@ -152,7 +152,7 @@ function Main:draw()
     end
 end
 
-function Main:websocketMessage(message: string, changeState: function(GameState))
+function Main:websocketMessage(message: string, changeState: function(GameState), _: function(string))
     self.otherplayers:websocketMessage(message, self.selfindex)
 end
 
