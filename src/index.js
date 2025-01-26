@@ -119,17 +119,17 @@ const CanvasCalls = {
         newCanvasElement.height = height ?? canvasElement.height;
         const newCanvas = newCanvasElement.getContext("2d");
 
-	let parentCanvas = canvas;
-	let drawCanvas = newCanvas;
-	let drawCanvasElement = null;
+        let parentCanvas = canvas;
+        let drawCanvas = newCanvas;
+        let drawCanvasElement = null;
 
         if (tint != undefined) {
-	    parentCanvas = newCanvas
-	    drawCanvasElement = document.createElement("canvas");
-	    drawCanvasElement.width = newCanvasElement.width;
-	    drawCanvasElement.height = newCanvasElement.height;
-	    drawCanvas = drawCanvasElement.getContext("2d");
-	}
+            parentCanvas = newCanvas
+            drawCanvasElement = document.createElement("canvas");
+            drawCanvasElement.width = newCanvasElement.width;
+            drawCanvasElement.height = newCanvasElement.height;
+            drawCanvas = drawCanvasElement.getContext("2d");
+        }
 
         const subCanvas = {
             // sx: sub-x -- selects location on sprite sheet
@@ -149,20 +149,20 @@ const CanvasCalls = {
             }
         }
 
-	if (tint != undefined) {
-	    subCanvas.draw = function(x, y) {
+        if (tint != undefined) {
+            subCanvas.draw = function(x, y) {
                 newCanvas.globalCompositeOperation = "source-over";
-		newCanvas.drawImage(drawCanvasElement, 0, 0)
+                newCanvas.drawImage(drawCanvasElement, 0, 0)
                 newCanvas.globalCompositeOperation = "source-atop";
-		newCanvas.fillStyle = tint;
-		newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                newCanvas.fillStyle = tint;
+                newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
                 canvas.drawImage(newCanvasElement, x, y)
             }
         } else {
-	    subCanvas.draw = function(x, y) {
+            subCanvas.draw = function(x, y) {
                 canvas.drawImage(newCanvasElement, x, y)
             }
-	}
+        }
 
         if (transparent) {
             subCanvas.clearCanvas = function() {
