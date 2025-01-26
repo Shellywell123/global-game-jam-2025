@@ -34,7 +34,8 @@ local pegasus = Pegasus:new({
             location = "./",
             default = "index.html"
         })
-    }
+    },
+    timeout = 5
 })
 
 local nextClientIndex = 1
@@ -55,19 +56,37 @@ local gameState: GameStates = "lobby"
 -- A FrameHandler which broadcasts any updates to position
 local frameHandler = FrameHandler:new({
     onTextFrameParsed = function(_: FrameHandler, client: socket.Client, frame: Frame, register: ServerClientRegister)
-        if (frame.stringContent == protocols.registerClient) then 
-            if (gameState ~= "lobby") then
-                return -- TODO: maybe a holding screen here?
-            end
-            print("Registering client "..nextClientIndex)
-            clientIndexes[client] = nextClientIndex
-            nextClientIndex = nextClientIndex + 1
-            clientData[clientIndexes[client]] = {
-                startRequested = false
-            }
-            local response = Frame:newTextFrame(protocols.registrationSuccess.." "..clientIndexes[client])
-            register:registerMessageToSend(client, response)
-            return
+       local gPlayerIndex = string.match(frame.stringContent, patterns.gamePos)
+       if (gPlayerIndex) then
+           if (gameState ~= "started") then return end
+           local clientIndex = clientIndexes[client]
+           if (clientIndex ~= math.tointeger(gPlayerIndex)) then return end
+           local broadcast = Frame:newTextFrame(frame.stringContent)
+           register:registerBroadcastToSend(broadcast)
+           return
+       end
+       local lobbyPosX, lobbyPosY, playerIndex = string.match(frame.stringContent, patterns.lobbyPos) 
+       if (lobbyPosX and lobbyPosY and playerIndex) then
+           if (gameState ~= "lobby") then return end
+           local clientIndex = clientIndexes[client]
+           if (clientIndex ~= math.tointeger(playerIndex)) then return end
+           local broadcast = Frame:newTextFrame(frame.stringContent)
+           register:registerBroadcastToSend(broadcast)
+           return
+       end
+       if (frame.stringContent == protocols.registerClient) then 
+           if (gameState ~= "lobby") then
+               return -- TODO: maybe a holding screen here?
+           end
+           print("Registering client "..nextClientIndex)
+           clientIndexes[client] = nextClientIndex
+           nextClientIndex = nextClientIndex + 1
+           clientData[clientIndexes[client]] = {
+               startRequested = false
+           }
+           local response = Frame:newTextFrame(protocols.registrationSuccess.." "..clientIndexes[client])
+           register:registerMessageToSend(client, response)
+           return
        end
        if (frame.stringContent == protocols.requestGameStart) then
            if (gameState ~= "lobby") then return end
@@ -85,18 +104,10 @@ local frameHandler = FrameHandler:new({
                    print("Starting game...")
                    local broadcast = Frame:newTextFrame(protocols.gameStarted)
                    register:registerBroadcastToSend(broadcast)
+                   gameState = "started"
                end
            end
            return
-       end
-       local lobbyPosX, lobbyPosY, playerIndex = string.match(frame.stringContent, patterns.lobbyPos) 
-       if (lobbyPosX and lobbyPosY and playerIndex) then
-           if (gameState ~= "lobby") then return end
-           local clientIndex = clientIndexes[client]
-           if (clientIndex ~= math.tointeger(playerIndex)) then return end
-           local broadcast = Frame:newTextFrame(frame.stringContent)
-           register:registerBroadcastToSend(broadcast)
-           print(frame.stringContent)
        end
     end
 })

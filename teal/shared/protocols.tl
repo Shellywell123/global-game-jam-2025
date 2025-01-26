@@ -3,5 +3,6 @@ return {
     registrationSuccess = "REG_SUCCESS",
     requestGameStart = "REQ_START",
     lobbyPos = "LOBBY_POS",
-    gameStarted = "GAME_START"
+    gameStarted = "GAME_START",
+    gamePos = "GAME_POS"
 }

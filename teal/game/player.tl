@@ -1,6 +1,8 @@
 require("shared.init")
 require("game.const")
 local Bubble = require("game.bubble")
+local protocols = require("shared.protocols")
+local Util = require("game.util")
 
 local BIG_POP_BUBBLES <const> = {
     [0] = 15,
@@ -15,14 +17,18 @@ local MAX_EPHEMERAL_VELOCITY <const> = 0.2
 local record Player
     bubbles: {Bubble}
     tint: string
+    selfindex: integer
 end
 
 local PlayerMetatable: metatable<Player> = {
     __index = Player,
 }
 
-function Player.new(tint: string, bubbles?: {Bubble}): Player
-    local instance: Player = {}
+function Player.new(selfindex: integer, bubbles?: {Bubble}): Player
+    local instance: Player = {
+        selfindex = selfindex
+    }
+    local tint = Util.getColourForPlayerIndex(selfindex)
     setmetatable(instance, PlayerMetatable)
     instance.bubbles = bubbles or {
         Bubble.new(4, 80, 0.18, nil, tint)
@@ -75,7 +81,7 @@ function Player:pop(i: integer)
     end
 end
 
-function Player:step(dt: number, keyStates: {string:boolean}, _: function(string))
+function Player:step(dt: number, keyStates: {string:boolean}, socketSend: function(string))
     local i = 1
     while (i <= #self.bubbles) do
         if (self.bubbles[i].y >= config.displayHeight) then
@@ -85,6 +91,11 @@ function Player:step(dt: number, keyStates: {string:boolean}, _: function(string
             i = i + 1
         end
     end
+    local sendMessage = protocols.gamePos .. " " .. self.selfindex
+    for _, bubble in ipairs(self.bubbles) do
+        sendMessage = sendMessage .. "|"..bubble.draw_x.." "..bubble.draw_y.." "..bubble.bubbleIndex.." "..math.max(bubble.invulnerableTime, 0)
+    end
+    socketSend(sendMessage)
 end
 
 function Player:draw()

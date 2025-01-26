@@ -24,7 +24,7 @@ function StartScreen.new(selfindex: integer) : StartScreen
         sendTimeout = 0
     }
     setmetatable(instance, StartScreenMetatable)
-    instance.player = Player.new(Util.getColourForPlayerIndex(selfindex))
+    instance.player = Player.new(selfindex)
     instance.otherplayers = OtherPlayers.new()
     instance.background = StartBackground.new()
     return instance
@@ -62,7 +62,7 @@ end
 
 function StartScreen:websocketMessage(message: string, changeState: function(GameState))
     if (message == protocols.gameStarted) then
-        local mainState = MainState.new(self.selfindex)
+        local mainState = MainState.new(self.selfindex, self.otherplayers)
         changeState(mainState)
     else
         self.otherplayers:websocketMessage(message, self.selfindex)

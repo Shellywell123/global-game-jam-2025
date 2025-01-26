@@ -1,5 +1,6 @@
 local Background = require("game.background")
 local Player = require("game.player")
+local OtherPlayers = require("game.otherplayers")
 local type GameState = require("game.gamestate")
 local Util = require("game.util")
 local EndState = require("game.states.end")
@@ -49,6 +50,7 @@ end
 local record Main is GameState
     background: Background
     player: Player
+    otherplayers: OtherPlayers
     selfindex: integer
     animations: {SpriteAnimation}
 end
@@ -57,13 +59,14 @@ local MainMetatable: metatable<Main> = {
     __index = Main
 }
 
-function Main.new(selfindex: integer) : Main
+function Main.new(selfindex: integer, otherplayers: OtherPlayers) : Main
     local instance: Main = {
-        selfindex = selfindex
+        selfindex = selfindex,
+        otherplayers = otherplayers
     }
     setmetatable(instance, MainMetatable)
     instance.background = Background.new()
-    instance.player = Player.new(Util.getColourForPlayerIndex(selfindex))
+    instance.player = Player.new(selfindex)
     instance.animations = {}
     return instance
 end
@@ -137,6 +140,7 @@ end
 
 function Main:draw()
     self.background:draw()
+    self.otherplayers:draw()
     self.player:draw()
     -- draw all the animations
     for _, anim in ipairs(self.animations) do
@@ -145,7 +149,7 @@ function Main:draw()
 end
 
 function Main:websocketMessage(message: string, changeState: function(GameState))
-    -- no-op
+    self.otherplayers:websocketMessage(message, self.selfindex)
 end
 
 return Main
