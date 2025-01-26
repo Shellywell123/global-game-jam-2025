@@ -19,10 +19,11 @@ function LoadingState:pointerDown() end
 
 function LoadingState:pointerUp() end
 
-function LoadingState:websocketMessage(message: string, changeState: function(GameState))
+function LoadingState:websocketMessage(message: string, changeState: function(GameState), playAudio: function(string))
     local match = string.match(message, protocols.registrationSuccess.." (%d+)")
     if (match) then
         changeState(StartState.new(math.tointeger(match)))
+        playAudio("menu.mp3")
     end
 end
 

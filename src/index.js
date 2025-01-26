@@ -13,6 +13,7 @@ const factory = new LuaFactory(wasmFile);
 const initFilename = "shared/init.lua"
 var blankColour = "white"
 var imageMap = new Map();
+var audioMap = new Map();
 var websocket;
 var game;
 
@@ -49,6 +50,20 @@ function prefetchImage(path) {
     return fetchFile();
 };
 
+function prefetchAudio(path, loop) {
+    async function fetchFile() {
+        const src = ""+window.location.origin+"/assets/"+path;
+	const audio = new Audio(src);
+	audio.loop = loop;
+	audioMap.set(path, audio);
+	return new Promise((resolve) => {
+	    audio.addEventListener("canplay", () => resolve());
+	});
+    };
+
+    return fetchFile();
+};
+
 function prefetchLuaFile(path) {
     async function fetchFile() {
         const url = new URL("assets/"+path, window.location.origin);
@@ -69,6 +84,10 @@ async function initialise(config) {
         const promise = prefetchLuaFile(name);
         prefetchArray.push(promise);
     });
+    for (const [name, loop] of Object.entries(config.audioFilenames)) {
+	const promise = prefetchAudio(name,loop);
+	prefetchArray.push(promise);
+    };
     canvasElement.width = config.displayWidth;
     canvasElement.height = config.displayHeight;
     blankColour = config.blankColour;
@@ -107,6 +126,16 @@ function registerWebsocketCallbacks(triggerOpen) {
         }
     }
 };
+
+// Interface enabling Lua to play audio
+const AudioCalls = {
+    playAudio: function(path) {
+        if (audioMap.has(path)) {
+            const audio = audioMap.get(path);
+	    audio.cloneNode(true).play();
+        }
+    }
+}
 
 // Interface enabling Lua to draw to canvas
 const CanvasCalls = {
@@ -253,6 +282,9 @@ async function execute() {
 
         // Set up canvas
         lua.global.set("Canvas", CanvasCalls);
+
+        // And audio
+	lua.global.set("Audio", AudioCalls);
 
         // Run the main file
         await lua.doFile(config.entryPoint);

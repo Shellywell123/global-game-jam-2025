@@ -55,6 +55,7 @@ function Player:pop(i: integer)
     self.bubbles[i].bubbleIndex = self.bubbles[i].bubbleIndex - 1
 
     if self.bubbles[i].bubbleIndex < 0 then
+        Audio.playAudio("pop.mp3")
         return
     end
 
@@ -79,6 +80,8 @@ function Player:pop(i: integer)
             end
         end
     end
+
+    Audio.playAudio("pop.mp3")
 end
 
 function Player:step(dt: number, keyStates: {string:boolean}, socketSend: function(string))

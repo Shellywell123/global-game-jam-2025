@@ -1,6 +1,7 @@
 global type Config = record
     imageFilenames: {string}
     luaFilenames: {string}
+    audioFilenames: {string:boolean}
     blankColour: string
     displayWidth: integer
     displayHeight: integer
@@ -17,6 +18,10 @@ global record Canvas
     end
 
     newCanvas: function(transparent: boolean, height?: integer, tintColour?: string): SubCanvas
+end
+
+global record Audio
+   playAudio: function(path: string) 
 end
 
 global record Socket
