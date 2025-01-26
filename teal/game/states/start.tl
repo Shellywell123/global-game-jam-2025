@@ -1,4 +1,5 @@
 local Player = require("game.player")
+local OtherPlayers = require("game.otherplayers")
 local type GameState = require("game.gamestate")
 local StartBackground = require("game.startbackground")
 local MainState = require("game.states.main")
@@ -7,6 +8,7 @@ local protocols = require("shared.protocols")
 
 local record StartScreen is GameState
     player: Player
+    otherplayers: OtherPlayers
     background: StartBackground
     selfindex: integer
     sendTimeout: number
@@ -23,6 +25,7 @@ function StartScreen.new(selfindex: integer) : StartScreen
     }
     setmetatable(instance, StartScreenMetatable)
     instance.player = Player.new(Util.getColourForPlayerIndex(selfindex))
+    instance.otherplayers = OtherPlayers.new()
     instance.background = StartBackground.new()
     return instance
 end
@@ -38,18 +41,22 @@ function StartScreen:step(dt: number, keyStates: {string:boolean}, socketSend: f
         end
     end
     self.player:step(dt, newKeystates, socketSend)
-    if (self.player.bubbles[1].y < 0) then
+    local bubble = self.player.bubbles[1]
+    if (bubble.y < 0) then
         if (self.sendTimeout <= 0) then
             socketSend(protocols.requestGameStart)
             self.sendTimeout = 2000
         else
             self.sendTimeout = self.sendTimeout - dt
         end
+    else
+        socketSend(protocols.lobbyPos.." "..bubble.draw_x.." "..bubble.draw_y.." "..self.selfindex)
     end
 end
 
 function StartScreen:draw()
     self.background:draw()
+    self.otherplayers:draw()
     self.player:draw()
 end
 
@@ -57,6 +64,8 @@ function StartScreen:websocketMessage(message: string, changeState: function(Gam
     if (message == protocols.gameStarted) then
         local mainState = MainState.new(self.selfindex)
         changeState(mainState)
+    else
+        self.otherplayers:websocketMessage(message, self.selfindex)
     end
 end
 
