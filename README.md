@@ -1,4 +1,4 @@
-# Global Game Jam 2025
+# Global Game Jam 2025 ![](src/assets/fish.gif)
 ```
                                                 __
                                               /    \   
