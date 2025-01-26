@@ -50,7 +50,7 @@ function StartScreen:step(dt: number, keyStates: {string:boolean}, socketSend: f
             self.sendTimeout = self.sendTimeout - dt
         end
     else
-        socketSend(protocols.lobbyPos.." "..math.floor(bubble.x).." "..math.floor(bubble.y).." "..self.selfindex)
+        socketSend(protocols.lobbyPos.." "..bubble.draw_x.." "..bubble.draw_y.." "..self.selfindex)
     end
 end
 
