@@ -1,6 +1,6 @@
 global TILE_SIZE <const> = 32
 global PIPE_SIZE <const> = TILE_SIZE / 2
-global BACKGROUND_SPEED <const> = 0.06
+global BACKGROUND_SPEED <const> = 0.09
 global PIPE_SPEED_RATIO <const> = 2
 global PIPE_SPEED <const> = BACKGROUND_SPEED * PIPE_SPEED_RATIO
 global INVULNERABLE_TIME <const> = 2000
