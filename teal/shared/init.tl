@@ -19,14 +19,17 @@ global config: Config = {
         "game/background.lua",
         "game/buttons.lua",
         "game/player.lua",
+        "game/util.lua",
         "game/backgroundslice.lua",
         "game/collideable.lua",
         "shared/subprotocol.lua",
+        "shared/protocols.lua",
         "shared/init.lua",
         "game/const.lua",
         "game/startbackground.lua",
         "game/states/main.lua",
-        "game/states/start.lua"
+        "game/states/start.lua",
+        "game/states/loading.lua"
     },
     blankColour = "black",
     pageBackgroundColour = "powderblue",

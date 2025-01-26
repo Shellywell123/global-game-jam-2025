@@ -211,17 +211,18 @@ end
 -- canvas
 local record Player
     bubbles: {Bubble}
+    tint: string
 end
 
 local PlayerMetatable: metatable<Player> = {
     __index = Player,
 }
 
-function Player.new(bubbles?: {Bubble}): Player
+function Player.new(tint: string, bubbles?: {Bubble}): Player
     local instance: Player = {}
     setmetatable(instance, PlayerMetatable)
     instance.bubbles = bubbles or {
-        Bubble.new(4, 80, 0.18)
+        Bubble.new(4, 80, 0.18, nil, tint)
     }
     return instance
 end
@@ -261,7 +262,7 @@ function Player:pop(i: integer)
     if big_pop then
         for size, num in ipairs(BIG_POP_BUBBLES) do
             for i = 1, num do
-                local b = Bubble.new(size, math.floor(bubble_copy.x), nil, math.floor(bubble_copy.y))
+                local b = Bubble.new(size, math.floor(bubble_copy.x), nil, math.floor(bubble_copy.y), bubble_copy.tint)
                 b.ephemeral_y_vel = randomY()
                 b.ephemeral_x_vel = randomX() * 8
                 b.invulnerableTime = bubble_copy.invulnerableTime

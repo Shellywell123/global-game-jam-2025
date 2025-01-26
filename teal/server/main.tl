@@ -9,6 +9,7 @@ local ConnectionHandler = require('server.websockets.connectionHandler')
 local ServerClientRegister = require('server.websockets.serverClientRegister')
 local socket = require("socket")
 local subprotocol = require("shared.subprotocol")
+local protocols = require("shared.protocols")
 
 -- Patch the mimetypes.guess function to handle wasm
 local super = mimetypes.guess
@@ -35,12 +36,18 @@ local pegasus = Pegasus:new({
     }
 })
 
+local nextClientIndex = 1
+local clientIndexes: {socket.Client:integer} = {}
+
 -- A FrameHandler which broadcasts any updates to position
 local frameHandler = FrameHandler:new({
-    onTextFrameParsed = function(_: FrameHandler, _: socket.Client, frame: Frame, register: ServerClientRegister)
-        if (string.find(frame.stringContent, "Position updated: x=%d+%.?%d*, y=%d+%.?%d*")) then
-            local broadcast = Frame:newTextFrame(frame.stringContent)
-            register:registerBroadcastToSend(broadcast)
+    onTextFrameParsed = function(_: FrameHandler, client: socket.Client, frame: Frame, register: ServerClientRegister)
+        if (frame.stringContent == protocols.registerClient) then 
+            print("Registering client "..nextClientIndex)
+            clientIndexes[client] = nextClientIndex
+            nextClientIndex = nextClientIndex + 1
+            local response = Frame:newTextFrame(protocols.registrationSuccess.." "..clientIndexes[client])
+            register:registerMessageToSend(client, response)
         end
     end
 })
