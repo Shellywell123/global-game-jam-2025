@@ -68,9 +68,9 @@ function OtherPlayers:newGameMessage(playerIndex: integer, selfIndex: integer, m
         if (#bubbles < bubbleCount) then
             if (tint == nil) then
                 tint = Util.getColourForPlayerIndex(playerIndex)
-                bubble = Bubble.new(math.tointeger(size), math.tointeger(x), nil, math.tointeger(y), tint)
-                table.insert(bubbles, bubble)
             end
+            bubble = Bubble.new(math.tointeger(size), math.tointeger(x), nil, math.tointeger(y), tint)
+            table.insert(bubbles, bubble)
         else
             bubble = bubbles[bubbleCount]
             bubble.draw_x = math.tointeger(x)
