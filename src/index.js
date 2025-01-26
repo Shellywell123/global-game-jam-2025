@@ -13,6 +13,7 @@ const factory = new LuaFactory(wasmFile);
 const initFilename = "shared/init.lua"
 var blankColour = "white"
 var imageMap = new Map();
+var audioMap = new Map();
 var websocket;
 var game;
 
@@ -49,6 +50,19 @@ function prefetchImage(path) {
     return fetchFile();
 };
 
+function prefetchAudio(path) {
+    async function fetchFile() {
+        const src = ""+window.location.origin+"/assets/"+path;
+	const audio = new Audio(src);
+	audioMap.set(path, audio);
+	return new Promise((resolve) => {
+	    audio.addEventListener("canplay", () => resolve());
+	});
+    };
+
+    return fetchFile();
+};
+
 function prefetchLuaFile(path) {
     async function fetchFile() {
         const url = new URL("assets/"+path, window.location.origin);
@@ -68,6 +82,10 @@ async function initialise(config) {
     config.luaFilenames.forEach(name => {
         const promise = prefetchLuaFile(name);
         prefetchArray.push(promise);
+    });
+    config.audioFilenames.forEach(name => {
+	const promise = prefetchAudio(name);
+	prefetchArray.push(promise);
     });
     canvasElement.width = config.displayWidth;
     canvasElement.height = config.displayHeight;

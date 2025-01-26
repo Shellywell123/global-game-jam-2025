@@ -6,6 +6,8 @@ return {
     build_dir = "src/assets",
     global_env_def = "teal/global-defs",
     dont_prune = {
-        "src/assets/*.png"
+        "src/assets/*.png",
+        "src/assets/*.gif",
+        "src/assets/*.mp3"
     }
 }

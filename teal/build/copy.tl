@@ -22,6 +22,10 @@ for _, filename in ipairs(config.luaFilenames) do
     copyFileToAssets(filename)
 end
 
+for _, filename in ipairs(config.audioFilenames) do
+    copyFileToAssets(filename)
+end
+
 -- Needed to initialise client-side
 copyFileToAssets("shared/init.lua")
 
