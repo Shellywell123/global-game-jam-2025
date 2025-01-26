@@ -118,7 +118,7 @@ const CanvasCalls = {
 
         let parentCanvas = canvas;
         let drawCanvas = newCanvas;
-        let drawCanvasElement = null;
+        let drawCanvasElement = newCanvasElement;
 
         if (tint != undefined) {
             parentCanvas = newCanvas
@@ -153,8 +153,8 @@ const CanvasCalls = {
                 newCanvas.globalCompositeOperation = "source-atop";
                 newCanvas.fillStyle = tint;
                 newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
-                canvas.drawImage(newCanvasElement, x, y)
-            }
+		canvas.drawImage(newCanvasElement, x, y)
+	    }
         } else {
             subCanvas.draw = function(x, y) {
                 canvas.drawImage(newCanvasElement, x, y)
@@ -162,15 +162,31 @@ const CanvasCalls = {
         }
 
         if (transparent) {
-            subCanvas.clearCanvas = function() {
-                newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+            if (drawCanvas == null) {
+		subCanvas.clearCanvas = function() {
+                    newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                }
+            } else {
+		subCanvas.clearCanvas = function() {
+                    newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+		    drawCanvas.clearRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
+                }
             }
         } else {
-            subCanvas.clearCanvas = function() {
-                newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
-                newCanvas.fillStyle = blankColour;
-                newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
-            }
+            if (drawCanvas == null) {
+                subCanvas.clearCanvas = function() {
+                    newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                    newCanvas.fillStyle = blankColour;
+                    newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                }
+            } else { 
+                subCanvas.clearCanvas = function() {
+                    newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                    newCanvas.fillStyle = blankColour;
+                    newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+		    drawCanvas.clearRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
+                }
+	    }
         }
 
         subCanvas.clearCanvas();
