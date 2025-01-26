@@ -39,16 +39,44 @@ local pegasus = Pegasus:new({
 local nextClientIndex = 1
 local clientIndexes: {socket.Client:integer} = {}
 
+local record ClientData
+    startRequested: boolean
+end
+
+local clientData: {integer:ClientData} = {}
+
 -- A FrameHandler which broadcasts any updates to position
 local frameHandler = FrameHandler:new({
     onTextFrameParsed = function(_: FrameHandler, client: socket.Client, frame: Frame, register: ServerClientRegister)
         if (frame.stringContent == protocols.registerClient) then 
+            -- TODO: what if a client registers after game start??
             print("Registering client "..nextClientIndex)
             clientIndexes[client] = nextClientIndex
             nextClientIndex = nextClientIndex + 1
+            clientData[clientIndexes[client]] = {
+                startRequested = false
+            }
             local response = Frame:newTextFrame(protocols.registrationSuccess.." "..clientIndexes[client])
             register:registerMessageToSend(client, response)
-        end
+       elseif (frame.stringContent == protocols.requestGameStart) then
+           -- TODO: what if a game has already started?
+           local clientIndex = clientIndexes[client]
+           if (clientIndex) then
+               clientData[clientIndex].startRequested = true
+               local startGame = true
+               for _,v in pairs(clientData) do
+                   if (not v.startRequested) then
+                       startGame = false
+                       break
+                   end
+               end
+               if (startGame) then
+                   print("Starting game...")
+                   local broadcast = Frame:newTextFrame(protocols.gameStarted)
+                   register:registerBroadcastToSend(broadcast)
+               end
+           end
+       end
     end
 })
 
