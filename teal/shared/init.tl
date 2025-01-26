@@ -19,6 +19,7 @@ global config: Config = {
         "game/background.lua",
         "game/buttons.lua",
         "game/player.lua",
+        "game/bubble.lua",
         "game/util.lua",
         "game/backgroundslice.lua",
         "game/collideable.lua",
