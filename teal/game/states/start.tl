@@ -24,7 +24,7 @@ function StartScreen.new(selfindex: integer) : StartScreen
         sendTimeout = 0
     }
     setmetatable(instance, StartScreenMetatable)
-    instance.player = Player.new(Util.getColourForPlayerIndex(selfindex))
+    instance.player = Player.new(selfindex)
     instance.otherplayers = OtherPlayers.new()
     instance.background = StartBackground.new()
     return instance

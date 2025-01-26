@@ -64,7 +64,7 @@ function Main.new(selfindex: integer, otherplayers: OtherPlayers) : Main
     }
     setmetatable(instance, MainMetatable)
     instance.background = Background.new()
-    instance.player = Player.new(Util.getColourForPlayerIndex(selfindex))
+    instance.player = Player.new(selfindex)
     instance.animations = {}
     return instance
 end
@@ -139,7 +139,7 @@ function Main:draw()
 end
 
 function Main:websocketMessage(message: string, changeState: function(GameState))
-    -- no-op
+    self.otherplayers:websocketMessage(message, self.selfindex)
 end
 
 return Main
