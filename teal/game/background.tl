@@ -2,8 +2,8 @@ require("shared.init")
 require("game.const")
 local BackgroundSlice = require("game.backgroundslice")
 
-local NUM_BLANKS <const> = 2
-local NUM_SECTIONS <const> = 20
+local NUM_BLANKS <const> = 1
+local NUM_SECTIONS <const> = 10
 
 local record Background
     canvas: Canvas.SubCanvas
@@ -24,7 +24,7 @@ function Background:step(dt: number)
 end
 
 function Background:draw()
-    self.canvas.draw(0, self.y - (self.game_height - 2 * config.displayHeight))
+    self.canvas.draw(0, math.floor(self.y - (self.game_height - 2 * config.displayHeight)))
     for _, slice in ipairs(self.slices) do
         slice:draw()
     end
@@ -39,10 +39,10 @@ function Background.new(): Background
     setmetatable(instance, BackgroundMetatable)
     instance.slices = {}
     -- then we start randomizing the map
-    for i = 0,NUM_BLANKS do
+    for i = 1,NUM_BLANKS do
         table.insert(instance.slices, BackgroundSlice.new(config.displayHeight - SLICE_HEIGHT_PX * i, 0))
     end
-    for i = 0,NUM_SECTIONS do
+    for i = 1,NUM_SECTIONS do
         table.insert(instance.slices, BackgroundSlice.new(config.displayHeight - SLICE_HEIGHT_PX * (NUM_BLANKS + i)))
     end
     -- for y=0,num_sections do

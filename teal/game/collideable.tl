@@ -167,24 +167,33 @@ local CollideableSliceMetatable: metatable<CollideableSlice> = {
     __index = CollideableSlice,
  }
 
+local function layout1(instance: CollideableSlice)
+    table.insert(instance.objects, Collideable.new())
+    table.insert(instance.objects, Collideable.new())
+    instance.objects[2].x = 32
+    table.insert(instance.objects, Collideable.new())
+    instance.objects[3].x = 64
+    table.insert(instance.objects, Collideable.new())
+    instance.objects[4].x = 96
+
+    table.insert(instance.objects, Collideable.new())
+    instance.objects[4].x = 224
+    instance.objects[4].sprite_xoffset = 1
+    instance.objects[4].can_pop = true
+end
+
+local LAYOUT_FUNCTIONS <const> = {
+    layout1, layout1
+}
+
+
 function CollideableSlice.new(layout: integer): CollideableSlice
     local instance: CollideableSlice = {}
     setmetatable(instance, CollideableSliceMetatable)
     instance.objects = {}
 
     if layout ~= 0 then
-        table.insert(instance.objects, Collideable.new())
-        table.insert(instance.objects, Collideable.new())
-        instance.objects[2].x = 32
-        table.insert(instance.objects, Collideable.new())
-        instance.objects[3].x = 64
-        table.insert(instance.objects, Collideable.new())
-        instance.objects[4].x = 96
-
-        table.insert(instance.objects, Collideable.new())
-        instance.objects[4].x = 224
-        instance.objects[4].sprite_xoffset = 1
-        instance.objects[4].can_pop = true
+        LAYOUT_FUNCTIONS[layout](instance)
     end
 
     return instance
