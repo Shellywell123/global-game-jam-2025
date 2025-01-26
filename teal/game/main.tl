@@ -1,7 +1,7 @@
 local subprotocol = require("shared.subprotocol")
 local Buttons = require("game.buttons")
 local type GameState = require("game.gamestate")
-local MainState = require("game.states.main")
+local StartState = require("game.states.start")
 
 global record Game
     currentState: GameState
@@ -22,7 +22,7 @@ Game.socketOpen = false
 
 function Game.init()
     Socket.open(subprotocol)
-    Game.currentState = MainState.new()
+    Game.currentState = StartState.new()
     Game.buttons = Buttons.new()
 end
 
@@ -32,8 +32,12 @@ function Game.socketSend(message: string)
     end
 end
 
+function Game.changeState(newState: GameState)
+    Game.currentState = newState
+end
+
 function Game.step(dt: number)
-    Game.currentState:step(dt, Game.keyStates, Game.socketSend)
+    Game.currentState:step(dt, Game.keyStates, Game.socketSend, Game.changeState)
 end
 
 function Game.draw()
@@ -63,7 +67,6 @@ function Game.pointerUp()
 end
 
 function Game.onButton(x: number, y: number)
-    print("onTouchStart: x="..x..", y="..y)
     local move = Game.buttons:onClicked(x, y)
     if (move == -1) then
         Game.keyPress("touchLeft")

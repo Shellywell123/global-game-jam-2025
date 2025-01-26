@@ -1,5 +1,5 @@
 local interface GameState
-    step: function(self: self, dt: number, keyStates: {string:boolean}, socketSend: function(string))
+    step: function(self: self, dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState))
     draw: function(self: self)
     keyUp: function(self: self, key: string)
     keyDown: function(self: self, key: string)
