@@ -4,7 +4,7 @@ local OtherPlayers = require("game.otherplayers")
 local type GameState = require("game.gamestate")
 local Util = require("game.util")
 local EndState = require("game.states.end")
-
+local type Vector2D = require("game.vector2d")
 
 local record SpriteAnimation
     canvas: Canvas.SubCanvas
@@ -91,7 +91,11 @@ function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function
         local squared_radius = radius * radius
         bubble.collision_vector = nil
         for _, bg_slice in ipairs(self.background.slices) do
-            local v = bg_slice.collision_slice:collide(bg_slice.screenY, bubble.draw_x + radius, bubble.draw_y + radius, squared_radius)
+            local v: {Vector2D,boolean} = nil
+            local inSlice = (bubble.draw_y + radius >= bg_slice.screenY) and (bubble.draw_y - radius) <= (bg_slice.screenY + SLICE_HEIGHT_PX)
+            if (inSlice) then
+                v = bg_slice.collision_slice:collide(bg_slice.screenY, bubble.draw_x + radius, bubble.draw_y + radius, squared_radius)
+            end
             if v then
                 bubble.collision_vector = v[1]
                 if v[2] then
