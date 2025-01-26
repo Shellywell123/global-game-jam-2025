@@ -93,7 +93,7 @@ function Player:step(dt: number, keyStates: {string:boolean}, socketSend: functi
     end
     local sendMessage = protocols.gamePos .. " " .. self.selfindex
     for _, bubble in ipairs(self.bubbles) do
-        sendMessage = sendMessage .. "|"..bubble.draw_x.." "..bubble.draw_y.." "..bubble.bubbleIndex.." "..bubble.invulnerableTime
+        sendMessage = sendMessage .. "|"..bubble.draw_x.." "..bubble.draw_y.." "..bubble.bubbleIndex.." "..math.max(bubble.invulnerableTime, 0)
     end
     socketSend(sendMessage)
 end
