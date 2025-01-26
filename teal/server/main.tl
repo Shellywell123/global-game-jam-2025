@@ -34,7 +34,8 @@ local pegasus = Pegasus:new({
             location = "./",
             default = "index.html"
         })
-    }
+    },
+    timeout = 5
 })
 
 local nextClientIndex = 1
