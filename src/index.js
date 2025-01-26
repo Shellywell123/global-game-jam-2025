@@ -13,10 +13,11 @@ const factory = new LuaFactory(wasmFile);
 const initFilename = "shared/init.lua"
 var blankColour = "white"
 var imageMap = new Map();
+var audioMap = new Map();
 var websocket;
 var game;
 
-function transformPointToCanvas(x,y) {
+function transformPointToCanvas(x, y) {
     const offsetWidthMinusPadding = canvasElement.offsetWidth - parseInt(canvasStyle.paddingLeft) - parseInt(canvasStyle.paddingRight);
     const offsetHeightMinusPadding = canvasElement.offsetHeight - parseInt(canvasStyle.paddingTop) - parseInt(canvasStyle.paddingBottom);
     const xScale = offsetWidthMinusPadding / canvasElement.width;
@@ -40,7 +41,7 @@ function transformPointToCanvas(x,y) {
 
 function prefetchImage(path) {
     async function fetchFile() {
-        const url = new URL("assets/"+path, window.location.origin);
+        const url = new URL("assets/" + path, window.location.origin);
         let blob = await fetch(url).then(r => r.blob());
         const bmp = await createImageBitmap(blob);
         imageMap.set(path, bmp);
@@ -49,9 +50,23 @@ function prefetchImage(path) {
     return fetchFile();
 };
 
+function prefetchAudio(path, loop) {
+    async function fetchFile() {
+        const src = ""+window.location.origin+"/assets/"+path;
+	const audio = new Audio(src);
+	audio.loop = loop;
+	audioMap.set(path, audio);
+	return new Promise((resolve) => {
+	    audio.addEventListener("canplay", () => resolve());
+	});
+    };
+
+    return fetchFile();
+};
+
 function prefetchLuaFile(path) {
     async function fetchFile() {
-        const url = new URL("assets/"+path, window.location.origin);
+        const url = new URL("assets/" + path, window.location.origin);
         let rawText = await fetch(url).then(r => r.text());
         await factory.mountFile(path, rawText);
     };
@@ -69,6 +84,10 @@ async function initialise(config) {
         const promise = prefetchLuaFile(name);
         prefetchArray.push(promise);
     });
+    for (const [name, loop] of Object.entries(config.audioFilenames)) {
+	const promise = prefetchAudio(name,loop);
+	prefetchArray.push(promise);
+    };
     canvasElement.width = config.displayWidth;
     canvasElement.height = config.displayHeight;
     blankColour = config.blankColour;
@@ -80,30 +99,27 @@ function registerWebsocketCallbacks(triggerOpen) {
     if (websocket) {
         if (game) {
             if (game["websocketMessage"] != undefined) {
-                websocket.onmessage = function(event) {
+                websocket.onmessage = function (event) {
                     game.websocketMessage(event.data);
                 }
             }
             if (game["websocketOpened"] != undefined) {
-                console.log("a")
                 console.log(websocket.readyState)
                 if (triggerOpen && websocket.readyState == WebSocket.OPEN) {
-                    console.log("b")
                     game.websocketOpened();
                 }
-                websocket.onopen = function() {
-                    console.log("c")
+                websocket.onopen = function () {
                     game.websocketOpened();
                 }
             }
             if (game["websocketClosed"] != undefined) {
-                websocket.onclose = function(event) {
+                websocket.onclose = function (event) {
                     game.websocketClosed(event.code, event.reason);
                 }
             }
 
             if (game["websocketError"] != undefined) {
-                websocket.onerror = function() {
+                websocket.onerror = function () {
                     game.websocketError();
                 }
             }
@@ -111,9 +127,19 @@ function registerWebsocketCallbacks(triggerOpen) {
     }
 };
 
+// Interface enabling Lua to play audio
+const AudioCalls = {
+    playAudio: function(path) {
+        if (audioMap.has(path)) {
+            const audio = audioMap.get(path);
+	    audio.cloneNode(true).play();
+        }
+    }
+}
+
 // Interface enabling Lua to draw to canvas
 const CanvasCalls = {
-    newCanvas: function(transparent, height, tint) {
+    newCanvas: function (transparent, height, tint) {
         const newCanvasElement = document.createElement("canvas");
         newCanvasElement.width = canvasElement.width;
         newCanvasElement.height = height ?? canvasElement.height;
@@ -121,7 +147,7 @@ const CanvasCalls = {
 
         let parentCanvas = canvas;
         let drawCanvas = newCanvas;
-        let drawCanvasElement = null;
+        let drawCanvasElement = newCanvasElement;
 
         if (tint != undefined) {
             parentCanvas = newCanvas
@@ -137,20 +163,27 @@ const CanvasCalls = {
             // sw/sh: width and height
             // dx, dy: location to place the sprite
             // height and width
-            drawImage: function(path, sx, sy, sw, sh, dx, dy, dw, dh) {
+            drawImage: function (path, sx, sy, sw, sh, dx, dy, dw, dh) {
                 if (imageMap.has(path)) {
                     const bmp = imageMap.get(path);
                     drawCanvas.drawImage(bmp, sx, sy, sw, sh, dx, dy, dw, dh);
                 }
             },
 
-            draw: function(x, y) {
+            draw: function (x, y) {
+                canvas.drawImage(newCanvasElement, x, y)
+            },
+
+            drawText: function (x, y, text) {
+                canvas.font = "25px Arial";
+                canvas.fillStyle = "white";
+                canvas.fillText(text, 17, 25);
                 canvas.drawImage(newCanvasElement, x, y)
             }
         }
 
         if (tint != undefined) {
-            subCanvas.draw = function(x, y) {
+            subCanvas.draw = function (x, y) {
                 newCanvas.globalCompositeOperation = "source-over";
                 newCanvas.drawImage(drawCanvasElement, 0, 0)
                 newCanvas.globalCompositeOperation = "source-atop";
@@ -159,20 +192,36 @@ const CanvasCalls = {
                 canvas.drawImage(newCanvasElement, x, y)
             }
         } else {
-            subCanvas.draw = function(x, y) {
+            subCanvas.draw = function (x, y) {
                 canvas.drawImage(newCanvasElement, x, y)
             }
         }
 
         if (transparent) {
-            subCanvas.clearCanvas = function() {
-                newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+            if (drawCanvas == null) {
+                subCanvas.clearCanvas = function () {
+                    newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                }
+            } else {
+                subCanvas.clearCanvas = function () {
+                    newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                    drawCanvas.clearRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
+                }
             }
         } else {
-            subCanvas.clearCanvas = function() {
-                newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
-                newCanvas.fillStyle = blankColour;
-                newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+            if (drawCanvas == null) {
+                subCanvas.clearCanvas = function () {
+                    newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                    newCanvas.fillStyle = blankColour;
+                    newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                }
+            } else {
+                subCanvas.clearCanvas = function () {
+                    newCanvas.clearRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                    newCanvas.fillStyle = blankColour;
+                    newCanvas.fillRect(0, 0, newCanvasElement.width, newCanvasElement.height);
+                    drawCanvas.clearRect(0, 0, drawCanvasElement.width, drawCanvasElement.height);
+                }
             }
         }
 
@@ -184,18 +233,18 @@ const CanvasCalls = {
 
 // Interface enabling Lua to interact with WebSockets
 const SocketCalls = {
-    open: function(subprotocol) {
+    open: function (subprotocol) {
         websocket = new WebSocket(`ws://${window.location.host}/websocket`, subprotocol);
         registerWebsocketCallbacks(false);
     },
 
-    send: function(data) {
+    send: function (data) {
         if (websocket) {
             websocket.send(data)
         }
     },
 
-    close: function() {
+    close: function () {
         if (websocket) {
             websocket.close()
         }
@@ -241,6 +290,9 @@ async function execute() {
         // Set up canvas
         lua.global.set("Canvas", CanvasCalls);
 
+        // And audio
+	lua.global.set("Audio", AudioCalls);
+
         // Run the main file
         await lua.doFile(config.entryPoint);
 
@@ -268,8 +320,8 @@ async function execute() {
 
         if (game["pointerDown"] != undefined) {
             document.addEventListener('pointerdown', (event) => {
-                let x,y;
-                [x,y] = transformPointToCanvas(event.pageX, event.pageY);
+                let x, y;
+                [x, y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
                     game.onButton(x, y);
                 }
@@ -278,8 +330,8 @@ async function execute() {
 
         if (game["pointerUp"] != undefined) {
             document.addEventListener('pointerup', (event) => {
-                let x,y;
-                [x,y] = transformPointToCanvas(event.pageX, event.pageY);
+                let x, y;
+                [x, y] = transformPointToCanvas(event.pageX, event.pageY);
                 if (x >= 0 && x <= canvasElement.width && y >= 0 && y <= canvasElement.height) {
                     game.onButtonRelease();
                 }

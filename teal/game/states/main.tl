@@ -1,6 +1,10 @@
 local Background = require("game.background")
 local Player = require("game.player")
+local OtherPlayers = require("game.otherplayers")
 local type GameState = require("game.gamestate")
+local Util = require("game.util")
+local EndState = require("game.states.end")
+local type Vector2D = require("game.vector2d")
 
 local record SpriteAnimation
     canvas: Canvas.SubCanvas
@@ -46,6 +50,8 @@ end
 local record Main is GameState
     background: Background
     player: Player
+    otherplayers: OtherPlayers
+    selfindex: integer
     animations: {SpriteAnimation}
 end
 
@@ -53,28 +59,42 @@ local MainMetatable: metatable<Main> = {
     __index = Main
 }
 
-function Main.new() : Main
-    local instance: Main = {}
+function Main.new(selfindex: integer, otherplayers: OtherPlayers) : Main
+    local instance: Main = {
+        selfindex = selfindex,
+        otherplayers = otherplayers
+    }
     setmetatable(instance, MainMetatable)
     instance.background = Background.new()
-    instance.player = Player.new()
+    instance.player = Player.new(selfindex)
     instance.animations = {}
     return instance
 end
 
-function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState))
+function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState, ?boolean))
     -- update all the active animations
     for _, anim in ipairs(self.animations) do
         anim:step(dt)
     end
 
     local to_pop = {}
+
+    if (#self.player.bubbles == 0) then
+        local endState = EndState.new()
+        changeState(endState)
+        endState:step(dt, {}, socketSend, changeState)
+    end
+
     for i, bubble in ipairs(self.player.bubbles) do
         local radius = bubble:radius()
         local squared_radius = radius * radius
         bubble.collision_vector = nil
         for _, bg_slice in ipairs(self.background.slices) do
-            local v = bg_slice.collision_slice:collide(bg_slice.screenY, bubble.draw_x + radius, bubble.draw_y + radius, squared_radius)
+            local v: {Vector2D,boolean} = nil
+            local inSlice = (bubble.draw_y + radius >= bg_slice.screenY) and (bubble.draw_y - radius) <= (bg_slice.screenY + SLICE_HEIGHT_PX)
+            if (inSlice) then
+                v = bg_slice.collision_slice:collide(bg_slice.screenY, bubble.draw_x + radius, bubble.draw_y + radius, squared_radius)
+            end
             if v then
                 bubble.collision_vector = v[1]
                 if v[2] then
@@ -123,11 +143,18 @@ end
 
 function Main:draw()
     self.background:draw()
+    self.otherplayers:draw()
     self.player:draw()
+    -- timeElapsed = 0 -- init elapased time to 0
+    -- self.score:draw(timeElapsed)
     -- draw all the animations
     for _, anim in ipairs(self.animations) do
         anim:draw()
     end
+end
+
+function Main:websocketMessage(message: string, changeState: function(GameState, ?boolean), _: function(string))
+    self.otherplayers:websocketMessage(message, self.selfindex)
 end
 
 return Main
