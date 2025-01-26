@@ -25,9 +25,10 @@ global PLAYER_COLOURS = {
     "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C",
     "#83AB58", "#001C1E", "#D1F7CE", "#004B28", "#C8D0F6", "#A3A489", "#806C66", "#222800",
     "#BF5650", "#E83000", "#66796D", "#DA007C", "#FF1A59", "#8ADBB4", "#1E0200", "#5B4E51",
-    "#C895C5", "#320033", "#FF6832", "#66E1D3", "#CFCDAC", "#D0AC94", "#7ED379", "#012C58"
+    "#C895C5", "#320033", "#FF6832", "#66E1D3", "#CFCDAC", "#D0AC94", "#7ED379", "#012C58",
+    "#000000"
 }
 for i=1,#PLAYER_COLOURS do
     PLAYER_COLOURS[i] = PLAYER_COLOURS[i].."BB"
 end
-table.insert(PLAYER_COLOURS, 1, "#FFFFFF00")
+PLAYER_COLOURS[1] = "#FFFFFF00" -- prefer true colour over black
