@@ -132,7 +132,7 @@ const AudioCalls = {
     playAudio: function(path) {
         if (audioMap.has(path)) {
             const audio = audioMap.get(path);
-	    audio.play();
+	    audio.cloneNode(true).play();
         }
     }
 }
