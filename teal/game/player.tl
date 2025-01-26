@@ -164,28 +164,29 @@ end
 -- canvas
 local record Player
     bubbles: {Bubble}
+    tint: string
 end
 
 local PlayerMetatable: metatable<Player> = {
     __index = Player,
  }
 
-function Player.new(bubbles?: {Bubble}): Player
+function Player.new(tint: string, bubbles?: {Bubble}): Player
     local instance: Player = {}
     setmetatable(instance, PlayerMetatable)
     instance.bubbles = bubbles or {
-        Bubble.new(1, 80, 0.18)
+        Bubble.new(1, 80, 0.18, nil, tint)
     }
     return instance
 end
 
 -- For testing 3 bubbles at once
-function Player.newTest(): Player
-    local instance = Player.new {
-        Bubble.new(0),
-        Bubble.new(1, 80, 0.18),
-        Bubble.new(2, 120, 0.10)
-    }
+function Player.newTest(tint: string): Player
+    local instance = Player.new(tint, {
+        Bubble.new(0, nil, nil, nil, tint),
+        Bubble.new(1, 80, 0.18, nil, tint),
+        Bubble.new(2, 120, 0.10, nil, tint)
+    })
     instance.bubbles[2].bubbleIndex = 1
     instance.bubbles[2].ticker_speed = 1.0
 

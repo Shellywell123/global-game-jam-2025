@@ -1,21 +1,25 @@
 local Background = require("game.background")
 local Player = require("game.player")
 local type GameState = require("game.gamestate")
+local Util = require("game.util")
 
 local record Main is GameState
     background: Background
     player: Player
+    selfindex: integer
 end
 
 local MainMetatable: metatable<Main> = {
     __index = Main
 }
 
-function Main.new() : Main
-    local instance: Main = {}
+function Main.new(selfindex: integer) : Main
+    local instance: Main = {
+        selfindex = selfindex
+    }
     setmetatable(instance, MainMetatable)
     instance.background = Background.new()
-    instance.player = Player.newTest()
+    instance.player = Player.newTest(Util.getColourForPlayerIndex(selfindex))
     return instance
 end
 

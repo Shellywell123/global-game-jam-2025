@@ -22,7 +22,7 @@ function LoadingState:pointerUp() end
 function LoadingState:websocketMessage(message: string, changeState: function(GameState))
     local match = string.match(message, protocols.registrationSuccess.." (%d+)")
     if (match) then
-        changeState(StartState.new())
+        changeState(StartState.new(math.tointeger(match)))
     end
 end
 
