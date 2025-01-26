@@ -69,7 +69,6 @@ function Game.pointerUp()
 end
 
 function Game.onButton(x: number, y: number)
-    print("onTouchStart: x="..x..", y="..y)
     local move = Game.buttons:onClicked(x, y)
     if (move == -1) then
         Game.keyPress("touchLeft")

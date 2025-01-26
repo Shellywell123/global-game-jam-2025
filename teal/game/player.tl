@@ -2,15 +2,32 @@ require("shared.init")
 require("game.const")
 local type Vector2D = require("game.vector2d")
 
+local BIG_POP_BUBBLES <const> = {
+    [0] = 15,
+    [1] = 11,
+    [2] = 7,
+    [3] = 4
+}
+
 local DEGREES_TO_RADIANS <const> = 3.1415 / 180
 local OSCILLATE_AMPLITUDE <const> = 2
-local SPRITE_STRIDE <const> = 32
+local EPHEMERAL_ACCELERATION <const> = 0.0002
+local MAX_EPHEMERAL_VELOCITY <const> = 0.2
 local BUBBLE_DIAMETER <const> = {
     -- maps from bubble "level" to the diameter in pixels
     [0] = 8,
     [1] = 16,
     [2] = 24,
-    [3] = 32
+    [3] = 32,
+    [4] = 64
+}
+local BUBBLE_SPEEDS <const> = {
+    -- maps from bubble "level" to the diameter in pixels
+    [0] = 0.2,
+    [1] = 0.18,
+    [2] = 0.1,
+    [3] = 0.08,
+    [4] = 0.06
 }
 
 -- An object that represents a single bubble
@@ -22,6 +39,8 @@ local record Bubble
     y: number
     x_vel: number
     y_vel: number
+    ephemeral_x_vel: number
+    ephemeral_y_vel: number
     -- internal incremental ticker
     ticker: number
     ticker_speed: number
@@ -35,7 +54,7 @@ end
 
 local BubbleMetatable: metatable<Bubble> = {
     __index = Bubble,
- }
+}
 
 function Bubble:radius(): number
     return BUBBLE_DIAMETER[self.bubbleIndex] / 2
@@ -51,6 +70,8 @@ function Bubble.copy(b: Bubble): Bubble
     instance.y = b.y
     instance.x_vel = b.x_vel
     instance.y_vel = b.y_vel
+    instance.ephemeral_x_vel = b.ephemeral_x_vel
+    instance.ephemeral_y_vel = b.ephemeral_y_vel
     instance.ticker_speed = b.ticker_speed
     instance.ticker = b.ticker
     instance.draw_x = b.draw_x
@@ -70,8 +91,10 @@ function Bubble.new(index: integer, x?: integer, x_vel?: number, y?: integer, ti
     instance.bubbleIndex = index
     instance.x = x or 30
     instance.y = y or config.displayHeight - 64
-    instance.x_vel = x_vel or 0.2
+    instance.x_vel = x_vel or BUBBLE_SPEEDS[index]
     instance.y_vel = 0.2
+    instance.ephemeral_x_vel = 0
+    instance.ephemeral_y_vel = 0
     instance.ticker_speed = 1.1
     instance.ticker = 0
     instance.draw_x = 0
@@ -117,10 +140,6 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
     end
     if (right and not left) then
         self.x = self.x + self.x_vel * dt
-        local boundary = config.displayWidth - BUBBLE_DIAMETER[self.bubbleIndex] - PIPE_SIZE
-        if (self.x >=(boundary))then
-            self.x = (boundary)
-        end
     end
 
     if (keyStates["w"] and not keyStates["s"]) then
@@ -134,11 +153,31 @@ function Bubble:step(dt: number, keyStates: {string:boolean})
         end
     end
 
+    -- if we are not colliding, there is a small restoration speed that gets added
+    if (cv.y == 0) and self.y + self:radius() > BUBBLE_TARGET_Y then
+        self.y = self.y - BUBBLE_RESTORATION_SPEED * dt
+    end
+
     -- increment the internal ticker for animations
     self.ticker = math.fmod(self.ticker + (dt * self.ticker_speed), 360)
 
     if self.invulnerableTime > 0 then
         self.invulnerableTime = self.invulnerableTime - dt
+    end
+
+    -- add temporary velocities
+    if (self.ephemeral_y_vel > 0) or (self.ephemeral_x_vel > 0) then
+        self.y = self.y + self.ephemeral_y_vel * dt
+        self.x = self.x + self.ephemeral_x_vel * dt
+        -- reduce temporary velocities
+        self.ephemeral_x_vel = math.max(0, self.ephemeral_x_vel - dt * EPHEMERAL_ACCELERATION)
+        self.ephemeral_y_vel = math.max(0, self.ephemeral_y_vel - dt * EPHEMERAL_ACCELERATION)
+    end
+
+    -- check boundary collision
+    local boundary = config.displayWidth - BUBBLE_DIAMETER[self.bubbleIndex] - PIPE_SIZE
+    if (self.x >=(boundary))then
+        self.x = (boundary)
     end
 
     -- have to keep these seperate to avoid rounding errors
@@ -154,10 +193,18 @@ function Bubble:draw()
     if (self.bubbleIndex ~= self.previousBubbleIndex) then
         local size = BUBBLE_DIAMETER[self.bubbleIndex]
         self.canvas.clearCanvas()
-        self.canvas.drawImage("bubble.png", self.bubbleIndex * SPRITE_STRIDE, 0, size, size, 0, 0, size, size)
+        if self.bubbleIndex ~= 4 then
+            self.canvas.drawImage("bubble.png", self.bubbleIndex * SPRITE_STRIDE, 0, size, size, 0, 0, size, size)
+        else
+            self.canvas.drawImage("bubble.png", 0, SPRITE_STRIDE * 2, size, size, 0, 0, size, size)
+        end
         self.previousBubbleIndex = self.bubbleIndex
     end
-    self.canvas.draw(self.draw_x, self.draw_y)
+
+    -- blink the bubbles
+    if (self.invulnerableTime <= 0) or (math.fmod(self.invulnerableTime, 100) < 50) then
+        self.canvas.draw(self.draw_x, self.draw_y)
+    end
 end
 
 -- An object that represents everything that a player controls, along with it's
@@ -169,59 +216,71 @@ end
 
 local PlayerMetatable: metatable<Player> = {
     __index = Player,
- }
+}
 
 function Player.new(tint: string, bubbles?: {Bubble}): Player
     local instance: Player = {}
     setmetatable(instance, PlayerMetatable)
     instance.bubbles = bubbles or {
-        Bubble.new(1, 80, 0.18, nil, tint)
+        Bubble.new(4, 80, 0.18, nil, tint)
     }
     return instance
 end
 
--- For testing 3 bubbles at once
-function Player.newTest(tint: string): Player
-    local instance = Player.new(tint, {
-        Bubble.new(0, nil, nil, nil, tint),
-        Bubble.new(1, 80, 0.18, nil, tint),
-        Bubble.new(2, 120, 0.10, nil, tint)
-    })
-    instance.bubbles[2].bubbleIndex = 1
-    instance.bubbles[2].ticker_speed = 1.0
+function Player:wouldPop(i: integer) : boolean
+    -- are we invulnerable still? return true if we would pop
+    return self.bubbles[i].invulnerableTime <= 0
+end
 
-    instance.bubbles[3].bubbleIndex = 3
-    instance.bubbles[3].ticker_speed = 0.9
-    return instance
+local function randomX() : number
+    return (math.random() - 0.5) * MAX_EPHEMERAL_VELOCITY
+end
+
+local function randomY() : number
+    return math.random() * MAX_EPHEMERAL_VELOCITY
 end
 
 function Player:pop(i: integer)
-    -- are we invulnerable still?
-    if self.bubbles[i].invulnerableTime > 0 then
-        return
-    end
-
+    local big_pop = self.bubbles[i].bubbleIndex == 4
+    -- todo: offset new bubbles to the center of the old bubble
     self.bubbles[i].bubbleIndex = self.bubbles[i].bubbleIndex - 1
 
     if self.bubbles[i].bubbleIndex < 0 then
         return
     end
 
-    self.bubbles[i].x = self.bubbles[i].x - 5
     self.bubbles[i].y = self.bubbles[i].y + 10
-
+    self.bubbles[i].ephemeral_y_vel = randomY()
+    self.bubbles[i].ephemeral_x_vel = randomX()
     self.bubbles[i].invulnerableTime = self.bubbles[i].invulnerableTime + INVULNERABLE_TIME
 
-    -- todo: slightly randomise the velocities
     local bubble_copy = Bubble.copy(self.bubbles[i])
-    bubble_copy.x = bubble_copy.x + 10
-
+    bubble_copy.ephemeral_y_vel = randomY()
+    bubble_copy.ephemeral_x_vel = randomX()
     table.insert(self.bubbles, bubble_copy)
+
+    if big_pop then
+        for size, num in ipairs(BIG_POP_BUBBLES) do
+            for i = 1, num do
+                local b = Bubble.new(size, math.floor(bubble_copy.x), nil, math.floor(bubble_copy.y))
+                b.ephemeral_y_vel = randomY()
+                b.ephemeral_x_vel = randomX() * 8
+                b.invulnerableTime = bubble_copy.invulnerableTime
+                table.insert(self.bubbles, b)
+            end
+        end
+    end
 end
 
 function Player:step(dt: number, keyStates: {string:boolean}, socketSend: function(string))
-    for i, bubble in ipairs(self.bubbles) do
-        bubble:step(dt, keyStates)
+    local i = 1
+    while (i <= #self.bubbles) do
+        if (self.bubbles[i].y >= config.displayHeight) then
+            table.remove(self.bubbles, i)
+        else
+            self.bubbles[i]:step(dt, keyStates)
+            i = i + 1
+        end
     end
 end
 
