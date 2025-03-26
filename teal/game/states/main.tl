@@ -2,7 +2,7 @@ local Background = require("game.background")
 local Player = require("game.player")
 local OtherPlayers = require("game.otherplayers")
 local type GameState = require("game.gamestate")
-local Util = require("game.util")
+-- local Util = require("game.util")
 local EndState = require("game.states.end")
 local type Vector2D = require("game.vector2d")
 
@@ -85,6 +85,8 @@ function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function
         endState:step(dt, {}, socketSend, changeState)
     end
 
+    -- TODO change state to start state if restart pressed
+
     for i, bubble in ipairs(self.player.bubbles) do
         local radius = bubble:radius()
         local squared_radius = radius * radius
@@ -128,12 +130,12 @@ function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function
     end
 
     -- cleanup the animations
-    local i = 1
-    while (i <= #self.animations) do
+    local j = 1
+    while (j <= #self.animations) do
         if self.animations[i].timeToLive > 0 then
-            i = i + 1
+            j = j + 1
         else
-            table.remove(self.animations, i)
+            table.remove(self.animations, j)
         end
     end
 
@@ -153,7 +155,7 @@ function Main:draw()
     end
 end
 
-function Main:websocketMessage(message: string, changeState: function(GameState, ?boolean), _: function(string))
+function Main:websocketMessage(message: string, _: function(GameState, ?boolean), _: function(string))
     self.otherplayers:websocketMessage(message, self.selfindex)
 end
 

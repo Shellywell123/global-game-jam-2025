@@ -1,9 +1,9 @@
 require("shared.init")
 local CollideableSlice = require("game.collideable")
 
-local TILE_SIZE <const> = 16
+local TILE_SIZEe <const> = 16
 local SLICE_HEIGHT <const> = 16
-global SLICE_HEIGHT_PX <const> = TILE_SIZE * SLICE_HEIGHT
+global SLICE_HEIGHT_PX <const> = TILE_SIZEe * SLICE_HEIGHT
 
 local record BackgroundSlice
     canvas: Canvas.SubCanvas

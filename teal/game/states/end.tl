@@ -1,4 +1,5 @@
 local type GameState = require("game.gamestate")
+-- local StartState = require("game.states.start")
 local EndBackground = require("game.endbackground")
 
 local record EndScreen is GameState
@@ -18,12 +19,18 @@ function EndScreen.new() : EndScreen
 end
 
 
-function EndScreen:step(numberOfPlayers: number, keyStates: {string:boolean}, socketSend: function(string), changeState:function(GameState, ?boolean))
-    -- option to restart game and load new game?
-    local newKeyStates = {} -- boolean required
-    setmetatable(newKeyStates, {__index = keyStates})
-    -- show score
-end
+-- function EndScreen:step(numberOfPlayers: number, keyStates: {string:boolean}, socketSend: function(string), changeState:function(GameState, ?boolean))
+--     -- option to restart game and load new game?
+--     local newKeyStates = {} -- boolean required
+--     setmetatable(newKeyStates, {__index = keyStates})
+
+--     -- show score
+--     -- TODO change state to start state if restart pressed
+--     -- if (keyStates["touchRestart"]) then
+--     --     local startState = StartState.new(self.otherplayers)
+--     --     changeState(StartState, false)
+--     -- end
+-- end
 
 
 function EndScreen:draw()

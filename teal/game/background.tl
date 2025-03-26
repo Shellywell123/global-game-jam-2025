@@ -25,7 +25,7 @@ function Background:step(dt: number)
         self.y = 0
     end
 
-    for i, slice in ipairs(self.slices) do
+    for _, slice in ipairs(self.slices) do
         slice.screenY = slice.screenY + PIPE_SPEED*dt
     end
 
@@ -64,8 +64,8 @@ function Background.new(): Background
     for i = 1,NUM_BLANKS do
         table.insert(instance.slices, BackgroundSlice.new(config.displayHeight - SLICE_HEIGHT_PX * i, 0))
     end
-    for i = 1,NUM_SECTIONS do
-        table.insert(instance.slices, BackgroundSlice.new(config.displayHeight - SLICE_HEIGHT_PX * (NUM_BLANKS + i)))
+    for j = 1,NUM_SECTIONS do
+        table.insert(instance.slices, BackgroundSlice.new(config.displayHeight - SLICE_HEIGHT_PX * (NUM_BLANKS + j)))
     end
     instance.canvas = Canvas.newCanvas(false, game_height)
     for x=0, (config.displayWidth//TILE_SIZE) do
@@ -77,7 +77,7 @@ function Background.new(): Background
 
     -- populate the stack of the map
     local mapstack = {}
-    for i = 1,1024 do
+    for _ = 1,1024 do
         table.insert(mapstack, math.random(1,5))
     end
     instance.mapstack = mapstack

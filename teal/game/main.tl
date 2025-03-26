@@ -1,9 +1,9 @@
 local subprotocol = require("shared.subprotocol")
 local Buttons = require("game.buttons")
 local type GameState = require("game.gamestate")
-local StartState = require("game.states.start")
+-- local StartState = require("game.states.start")
 local LoadingState = require("game.states.loading")
-local MainState = require("game.states.main")
+-- local MainState = require("game.states.main")
 local protocols = require("shared.protocols")
 
 local function drawScore(canvas: Canvas.SubCanvas, timeElapsed: number)
@@ -124,7 +124,11 @@ function Game.onButton(x: number, y: number)
         Game.keyPress("touchLeft")
     elseif (move == 1) then
         Game.keyPress("touchRight")
+    elseif (move == 1) then
+        Game.keyPress("touchRestart")    -- TODO else if =2 then restart button clicked
     end
+    print("clicked")
+
 end
 
 function Game.onButtonRelease()
@@ -132,6 +136,7 @@ function Game.onButtonRelease()
     -- ben knows this is hacky but just let it slide okay
     Game.keyStates["touchLeft"] = false
     Game.keyStates["touchRight"] = false
+    Game.keyStates["touchRestart"] = false
 end
 
 function Game.websocketOpened()

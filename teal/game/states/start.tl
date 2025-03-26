@@ -3,7 +3,7 @@ local OtherPlayers = require("game.otherplayers")
 local type GameState = require("game.gamestate")
 local StartBackground = require("game.startbackground")
 local MainState = require("game.states.main")
-local Util = require("game.util")
+-- local Util = require("game.util")
 local protocols = require("shared.protocols")
 
 local record StartScreen is GameState
@@ -30,7 +30,7 @@ function StartScreen.new(selfindex: integer) : StartScreen
     return instance
 end
 
-function StartScreen:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState, ?boolean))
+function StartScreen:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), _: function(GameState, ?boolean))
     local newKeystates = {}
     setmetatable(newKeystates, {__index = keyStates})
     -- hacky: make it move up if any keys pressed

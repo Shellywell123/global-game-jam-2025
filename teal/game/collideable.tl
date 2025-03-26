@@ -1,7 +1,7 @@
 require("shared.init")
 local type Vector2D = require("game.vector2d")
 
-local DEGREES_TO_RADIANS <const> = 3.1415 / 180
+-- local DEGREES_TO_RADIANS <const> = 3.1415 / 180
 
 local record Collideable
     x: number
@@ -176,7 +176,7 @@ local CollideableSliceMetatable: metatable<CollideableSlice> = {
     __index = CollideableSlice,
 }
 
-local TILE_CONST <const> = 16;
+-- local TILE_CONST <const> = 16;
 
 local function layout1(instance: CollideableSlice)
     table.insert(instance.objects, Collideable.new(32, 40))

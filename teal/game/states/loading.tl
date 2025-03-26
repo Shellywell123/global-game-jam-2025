@@ -5,15 +5,15 @@ local StartState = require("game.states.start")
 local record LoadingState is GameState
 end
 
-function LoadingState:step(dt: number, keyStates: {string:boolean}, socketSend: function(string), changeState: function(GameState, ?boolean)) end
+function LoadingState:step(_: number, _: {string:boolean}, _: function(string), _: function(GameState, ?boolean)) end
 
 function LoadingState:draw() end
 
-function LoadingState:keyUp(key: string) end
+function LoadingState:keyUp(_: string) end
 
-function LoadingState:keyDown(key: string) end
+function LoadingState:keyDown(_: string) end
 
-function LoadingState:keyPress(key: string) end
+function LoadingState:keyPress(_: string) end
 
 function LoadingState:pointerDown() end
 

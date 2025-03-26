@@ -2,11 +2,11 @@ local Bubble = require("game.bubble")
 local Util = require("game.util")
 local patterns = require("shared.patterns")
 
-local record ProtoBubble
-    x: integer
-    y: integer
-    tint: integer
-end
+-- local record ProtoBubble
+--     x: integer
+--     y: integer
+--     tint: integer
+-- end
 
 local record OtherPlayers
     bubbles: {integer:{Bubble}}
@@ -60,7 +60,7 @@ function OtherPlayers:newGameMessage(playerIndex: integer, selfIndex: integer, m
         self.bubbles[playerIndex] = bubbles
     end
     local tint: string = nil
-    local prevBubbleCount = #bubbles
+    -- local prevBubbleCount = #bubbles
     local bubbleCount = 0
     for x, y, size, invulnerableTime in string.gmatch(message, patterns.gamePosLine) do
         bubbleCount = bubbleCount + 1

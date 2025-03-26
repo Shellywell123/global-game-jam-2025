@@ -9,7 +9,7 @@ local EndBackgroundMetatable: metatable<EndBackground> = {
     __index = EndBackground
 }
 
-function EndBackground:step(dt: number)
+function EndBackground:step()
 end
 
 function EndBackground:draw()

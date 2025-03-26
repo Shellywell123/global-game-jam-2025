@@ -9,7 +9,7 @@ local StartBackgroundMetatable: metatable<StartBackground> = {
     __index = StartBackground
 }
 
-function StartBackground:step(dt: number)
+function StartBackground:step()
     -- no-op
 end
 

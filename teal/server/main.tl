@@ -101,7 +101,7 @@ local frameHandler = FrameHandler:new({
                    end
                end
                if (startGame) then
-                   print("Starting game...")
+                   print("Ben Starting game...")
                    local broadcast = Frame:newTextFrame(protocols.gameStarted)
                    register:registerBroadcastToSend(broadcast)
                    gameState = "started"

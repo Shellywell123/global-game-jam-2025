@@ -2,7 +2,7 @@
   "name": "wasmoon-teal-game-template",
   "main": "src/index.js",
   "devDependencies": {
-    "esbuild": "0.24.0",
+    "esbuild": "^0.25.1",
     "wasmoon": "1.15.0"
   },
   "scripts": {

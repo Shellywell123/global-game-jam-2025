@@ -21,15 +21,22 @@ end
 
 function Buttons:onClicked(x: number, y: number): number
 
-    if (x < config.displayWidth /2 ) then -- touch left control
-        print("Left button clicked")
-        return -1
-    
-    elseif (x > config.displayWidth /2 ) then -- touch right control
-        print("Right button clicked")
-        return 1
+    if (y < config.displayHeight /2 ) then -- touch up control
+        print("Restart button clicked")
+        -- TODO add restart button here
+        return 2
+    else
+        if (x < config.displayWidth /2 ) then -- touch left control
+            print("Left button clicked")
+            return -1
+        
+        elseif (x > config.displayWidth /2 ) then -- touch right control
+            print("Right button clicked")
+            return 1
+        end
     end
 
+    
     return 0
 end
 
