@@ -23,7 +23,6 @@ function Buttons:onClicked(x: number, y: number): number
 
     if (y < config.displayHeight /2 ) then -- touch up control
         print("Restart button clicked")
-        -- TODO add restart button here
         return 2
     else
         if (x < config.displayWidth /2 ) then -- touch left control

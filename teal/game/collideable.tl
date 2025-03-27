@@ -22,13 +22,13 @@ local record Collideable
 end
 
 local function signum(x : number) : number
-   if x > 0 then
-      return 1
-   elseif x < 0 then
-      return -1
-   else
-      return 0
-   end
+    if x > 0 then
+        return 1
+    elseif x < 0 then
+        return -1
+    else
+        return 0
+    end
 end
 
 local function line_circle_at_origin_determinant(x1: number, x2: number, y1: number, y2: number, squared_radius: number) : Vector2D

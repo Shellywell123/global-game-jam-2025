@@ -1,0 +1,7 @@
+services:
+  belch:
+    container_name: belch
+    build:
+      context: .
+    ports:
+      - 8080:8080

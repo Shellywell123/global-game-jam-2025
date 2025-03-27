@@ -2,8 +2,8 @@ local Background = require("game.background")
 local Player = require("game.player")
 local OtherPlayers = require("game.otherplayers")
 local type GameState = require("game.gamestate")
--- local Util = require("game.util")
 local EndState = require("game.states.end")
+-- local LoadingtState = require("game.states.loading")
 local type Vector2D = require("game.vector2d")
 
 local record SpriteAnimation
@@ -87,6 +87,16 @@ function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function
 
     -- TODO change state to start state if restart pressed
 
+    -- if (keyStates["r"] or keyStates["touchRestart"]) then
+    --     -- testing button press by ending the game
+    --     -- local loadingState = LoadingState.new()
+    --     -- changeState(loadingState)
+    --     -- loadingState:step(dt, {}, socketSend, changeState)
+    --     local endState = EndState.new()
+    --     changeState(endState)
+    --     endState:step(dt, {}, socketSend, changeState)
+    -- end
+
     for i, bubble in ipairs(self.player.bubbles) do
         local radius = bubble:radius()
         local squared_radius = radius * radius
@@ -132,7 +142,7 @@ function Main:step(dt: number, keyStates: {string:boolean}, socketSend: function
     -- cleanup the animations
     local j = 1
     while (j <= #self.animations) do
-        if self.animations[i].timeToLive > 0 then
+        if self.animations[j].timeToLive > 0 then
             j = j + 1
         else
             table.remove(self.animations, j)

@@ -74,7 +74,6 @@ function FrameHandler:handlePingFrame(client: socket.Client, frame: Frame, regis
 end
 
 function FrameHandler:handlePongFrame(_: socket.Client, _: Frame, _: ServerClientRegister)
-    -- TODO
     -- print("PONG FRAME.")
 end
 

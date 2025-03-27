@@ -63,21 +63,26 @@ function ConnectionHandler:handleNext(pegasus: Pegasus, handler: Handler, regist
                     pcall(function() frameHandler:handleFrame(client, result, register) end)
                 else
                     local containedError = result as ContainedError
+                    print(containedError)
                     if (containedError.message == "closed") then
                         print("Connection "..index.." forcibly closed.")
                         register:removeClient(client)
                     else
-                        print("Error parsing frame from connection "..index..": "..containedError.message)
+                        local ermsg = "?"
+                        if containedError.message ~= nil then
+                            ermsg = containedError.message
+                        end
+                        print("Error parsing frame from connection "..index..": "..ermsg)
                     end
                 end
 
                 -- Send immediate responses, e.g ping or pong
                 local immediate = register.immediateMessageQueue[client]
                 if (immediate ~= nil) then
-                   for _, frame in ipairs(immediate) do
-                      client:send(frame)
-                   end
-                   register.immediateMessageQueue[client] = {}
+                    for _, frame in ipairs(immediate) do
+                        client:send(frame)
+                    end
+                    register.immediateMessageQueue[client] = {}
                 end
             end
         end
@@ -88,10 +93,10 @@ function ConnectionHandler:handleNext(pegasus: Pegasus, handler: Handler, regist
             -- Send non-immediate responses, e.g broadcasts
             if (index ~= nil) then
                 for _, frame in ipairs(register.messageQueue[client]) do
-                   client:send(frame)
+                    client:send(frame)
                 end
                 register.messageQueue[client] = {}
-             end
+            end
         end
     end
 

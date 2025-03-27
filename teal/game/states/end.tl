@@ -19,18 +19,18 @@ function EndScreen.new() : EndScreen
 end
 
 
--- function EndScreen:step(numberOfPlayers: number, keyStates: {string:boolean}, socketSend: function(string), changeState:function(GameState, ?boolean))
---     -- option to restart game and load new game?
---     local newKeyStates = {} -- boolean required
---     setmetatable(newKeyStates, {__index = keyStates})
+function EndScreen:step(numberOfPlayers: number, keyStates: {string:boolean}, socketSend: function(string), changeState:function(GameState, ?boolean))
+    -- option to restart game and load new game?
+    local newKeyStates = {} -- boolean required
+    setmetatable(newKeyStates, {__index = keyStates})
 
---     -- show score
---     -- TODO change state to start state if restart pressed
---     -- if (keyStates["touchRestart"]) then
---     --     local startState = StartState.new(self.otherplayers)
---     --     changeState(StartState, false)
---     -- end
--- end
+    -- show score
+    -- TODO change state to start state if restart pressed
+    -- if (keyStates["touchRestart"]) then
+    --     startState = StartState.new(self.otherplayers)
+    --     changeState(StartState, false)
+    -- end
+end
 
 
 function EndScreen:draw()

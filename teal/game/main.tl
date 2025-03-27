@@ -1,16 +1,12 @@
 local subprotocol = require("shared.subprotocol")
 local Buttons = require("game.buttons")
 local type GameState = require("game.gamestate")
--- local StartState = require("game.states.start")
+local StartState = require("game.states.start")
 local LoadingState = require("game.states.loading")
+local EndState = require("game.states.end")
 -- local MainState = require("game.states.main")
 local protocols = require("shared.protocols")
 
-local function drawScore(canvas: Canvas.SubCanvas, timeElapsed: number)
-    local timeElapsedString = string.format("%.2fs", timeElapsed)
-    canvas.clearCanvas()
-    canvas.drawText(0, 0, timeElapsedString)
-end
 
 global record Game
     currentState: GameState
@@ -35,6 +31,12 @@ Game.keyStates = {}
 Game.socketOpen = false
 Game.userInteracted = false
 Game.queuedAudio = {}
+
+local function drawScore(canvas: Canvas.SubCanvas, timeElapsed: number)
+    local timeElapsedString = string.format("%.2fs", timeElapsed)
+    canvas.clearCanvas()
+    canvas.drawText(0, 0, timeElapsedString)
+end
 
 function Game.playAudio(path: string)
     if (Game.userInteracted) then Audio.playAudio(path)
@@ -119,16 +121,25 @@ end
 
 function Game.onButton(x: number, y: number)
     Game.setUserInteracted()
-    local move = Game.buttons:onClicked(x, y)
-    if (move == -1) then
+    local b = Game.buttons:onClicked(x, y)
+    if (b == -1) then
         Game.keyPress("touchLeft")
-    elseif (move == 1) then
+    elseif (b == 1) then
         Game.keyPress("touchRight")
-    elseif (move == 1) then
+    elseif (b == 2) then
         Game.keyPress("touchRestart")    -- TODO else if =2 then restart button clicked
+        -- if (keyStates["r"] or keyStates["touchRestart"]) then
+            -- testing button press by ending the game
+            -- local loadingState = LoadingState.new()
+            -- changeState(loadingState)
+            -- loadingState:step(dt, {}, socketSend, changeState)
+        -- local endState = EndState.new()
+        local loadingState = StartState.new(0)
+        Game.changeState(loadingState)
+        -- Game.init()
+        -- endState:step(dt, {}, socketSend, changeState)
+        -- end
     end
-    print("clicked")
-
 end
 
 function Game.onButtonRelease()
