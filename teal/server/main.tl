@@ -136,6 +136,7 @@ local connectionHandler: ConnectionHandler = ConnectionHandler:new({
 
 pegasus.start = function(self: Pegasus)
     local handler = Handler:new(nil, self.location, self.plugins, self.log)
+    print("Pegasus starting on port " .. self.port)
     local server = assert(socket.bind(self.host, self.port))
     -- Keeps track of connected websocket clients
     local register = ServerClientRegister:new(server)
