@@ -26,7 +26,7 @@ local websocketHandshakePlugin = WebsocketHandshakePlugin:new("/websocket", subp
 
 -- Basic server setup
 local pegasus = Pegasus:new({
-    port = "8080",
+    port = "26000",
     location = "dist/",
     plugins = {
         websocketHandshakePlugin:getPlugin(),
@@ -106,7 +106,8 @@ local frameHandler = FrameHandler:new({
             if (clientIndex) then
                 clientData[clientIndex].startRequested = true
                 local startGame = true
-                -- i think this is the logic to wait for everybody to start the game?
+                
+                -- this is the logic to wait for everybody to start the game
                 for _,v in pairs(clientData) do
                     if (not v.startRequested) then
                         startGame = false

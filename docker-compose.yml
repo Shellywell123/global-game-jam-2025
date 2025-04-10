@@ -3,4 +3,4 @@ services:
     container_name: belch
     image: shellywell123/belch:latest
     ports:
-      - 8080:8080
+      - 26000:8080

@@ -21,6 +21,6 @@ RUN npm install
 
 RUN npm run build
 
-EXPOSE 8080
+EXPOSE 26000
 
 CMD ["tl", "run", "teal/server/main.tl"]
